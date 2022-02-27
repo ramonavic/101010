@@ -60,25 +60,25 @@
 </script>
 
 <style scoped>
-  h3 {
+h3 {
     margin: 40px 0 0;
-  }
+}
 
-  ul {
+ul {
     list-style-type: none;
     padding: 0;
-  }
+}
 
-  li {
+li {
     display: inline-block;
     margin: 0 10px;
-  }
+}
 
-  a {
+a {
     color: #42b983;
-  }
+}
 
-  .profile_pic {
+.profile_pic {
     width: 100px;
-  }
+}
 </style>

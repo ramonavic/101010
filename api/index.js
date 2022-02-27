@@ -3,16 +3,16 @@ import axios from 'axios'
 import cookieParser from 'cookie-parser'
 
 // TODO do this for production
-const client_id = process.env.SPOTIFY_CLIENT_ID 
+const client_id = process.env.SPOTIFY_CLIENT_ID
 const client_secret = process.env.SPOTIFY_CLIENT_SECRET
 const redirect_uri = process.env.REDIRECT_URI
 const scope = 'user-read-email user-read-private playlist-modify-public'
 
 // TODO doesnt seem to work?
-const cookieSecret = 'RhQ-5NtjNAphRzoEyJ-BmqKXATlLFOMo8'
+const cookieSecret = 'RhQ-5NtjNAphRzoEyJ-BmqKXATLFOMo8'
 
 const app = express()
-app.use(cookieParser(cookieSecret, {httpOnly: true}))
+app.use(cookieParser(cookieSecret, { httpOnly: true }))
 
 
 module.exports = {
@@ -28,32 +28,32 @@ app.use('*', (req, res, next) => {
 app.use('/spotify/*', async (req, res, next) => {
     console.log(req.signedCookies.access_token)
     console.log(req.signedCookies.refresh_token)
-   if (!req.signedCookies.access_token && req.signedCookies.refresh_token) {
-       console.log('no access token', req.signedCookies.refresh_token)
-     const authData = await getAccessTokenFromRefreshToken(req.signedCookies.refresh_token)
-     if (authData.access_token) {
-        await setCookies(res, authData)
-     } else {
-         console.error('Didnt receive access token')
-     }
-   }
+    if (!req.signedCookies.access_token && req.signedCookies.refresh_token) {
+        console.log('no access token', req.signedCookies.refresh_token)
+        const authData = await getAccessTokenFromRefreshToken(req.signedCookies.refresh_token)
+        if (authData.access_token) {
+            await setCookies(res, authData)
+        } else {
+            console.error('Didnt receive access token')
+        }
+    }
 
     next()
 })
 
 app.get('/check_auth', (req, res) => {
-   console.log('inside check auth')
-  console.log(req.signedCookies.user)
-  if (req.signedCookies.user) {
-    res.json(req.signedCookies.user)
-  } else {
-    res.end()
-  }
+    console.log('inside check auth')
+    console.log(req.signedCookies.user)
+    if (req.signedCookies.user) {
+        res.json(req.signedCookies.user)
+    } else {
+        res.end()
+    }
 })
 
 app.get('/login', (req, res) => {
 
-    const loginDetails = prepareLoginDetails() 
+    const loginDetails = prepareLoginDetails()
 
     res.writeHead(302, {
         Location: 'https://accounts.spotify.com/authorize?' + loginDetails
@@ -77,8 +77,8 @@ app.get(`/callback`, async (req, res) => {
 app.get('/spotify/get_playlist', async (req, res) => {
     console.log('inside get playlist', req.signedCookies.access_token)
 
-   try {
-       const response = await axios.get('https://api.spotify.com/v1/users/ramonavic/playlists', {
+    try {
+        const response = await axios.get('https://api.spotify.com/v1/users/ramonavic/playlists', {
             headers: {
                 'Authorization': 'Bearer ' + req.signedCookies.access_token,
                 'Content-Type': 'application/json'
@@ -96,7 +96,7 @@ app.get('/spotify/get_playlist', async (req, res) => {
     }
 
     res.end('Something else went wrong')
-    
+
 })
 
 const getUserInfo = async (accessToken) => {
@@ -111,11 +111,11 @@ const getUserInfo = async (accessToken) => {
 
         const data = response.data
         const user = {
-          name: data.display_name, 
-          id: data.id,
-          images: data.images,
-          email: data.email,
-          profileUrl: data.external_urls.spotify
+            name: data.display_name,
+            id: data.id,
+            images: data.images,
+            email: data.email,
+            profileUrl: data.external_urls.spotify
         }
 
         return user
@@ -125,7 +125,7 @@ const getUserInfo = async (accessToken) => {
 
 const prepareLoginDetails = () => {
     return new URLSearchParams({
-        client_id, 
+        client_id,
         redirect_uri,
         scope,
         response_type: 'code',
@@ -137,7 +137,7 @@ const getAccessToken = async (code) => {
 
     const params = {
         grant_type: 'authorization_code',
-        client_id, 
+        client_id,
         client_secret,
         code,
         redirect_uri
@@ -160,7 +160,7 @@ const getAccessToken = async (code) => {
                 status: 'succesfully retrieved token and set cookies'
             }
         }
-      
+
     } catch (err) {
         console.log(err)
         return {
@@ -173,7 +173,7 @@ const getAccessTokenFromRefreshToken = async (refresh_token) => {
     console.log('refresh token', refresh_token)
     const params = {
         grant_type: 'refresh_token',
-        client_id, 
+        client_id,
         client_secret,
         refresh_token
     }
@@ -234,6 +234,6 @@ const setCookies = async (res, data = {}) => {
             signed: true
         })
     }
- 
-    return user 
+
+    return user
 }
