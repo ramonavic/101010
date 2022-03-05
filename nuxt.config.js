@@ -18,6 +18,7 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
+
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
@@ -29,11 +30,18 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
+    '@nuxtjs/style-resources'
   ],
+
+  styleResources: {
+    scss: ['./assets/*.scss'],
+    hoistUseStatements: true
+  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    'nuxt-buefy'
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
@@ -41,14 +49,14 @@ export default {
     watch: ['api'],
 
     extend(config, ctx) {
-      
+
     }
   },
 
   env: {
-    spotifyid: process.env.SPOTIFY_CLIENT_ID, 
+    spotifyid: process.env.SPOTIFY_CLIENT_ID,
     clientURL: process.env.CLIENT_URL
-  }, 
+  },
 
   serverMiddleware: ['~/api']
 }

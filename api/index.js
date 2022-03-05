@@ -62,6 +62,14 @@ app.get('/login', (req, res) => {
     res.send()
 })
 
+app.post('/logout', (req, res) => {
+    console.log('inside logout')
+    res.clearCookie('user')
+        .clearCookie('access_token')
+        .clearCookie('refresh_token')
+        .redirect('/')
+})
+
 app.get(`/callback`, async (req, res) => {
 
     const code = req.query.code;
@@ -74,9 +82,36 @@ app.get(`/callback`, async (req, res) => {
     }
 })
 
-app.get('/spotify/get_playlist', async (req, res) => {
-    console.log('inside get playlist', req.signedCookies.access_token)
+app.get('/spotify/get_playlist/:id', async (req, res) => {
+    console.log('inside get playlist', req.params.id)
+    const playlistId = req.params.id
 
+    try {
+        const response = await axios.get(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+            headers: {
+                'Authorization': 'Bearer ' + req.signedCookies.access_token,
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if (response.data) {
+            res.send(response.data).end()
+        } else {
+            console.log(response)
+            res.send('something went wrong').end()
+        }
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
+
+    // res.end('Something else went wrong')
+
+})
+
+app.get('/spotify/playlists', async (req, res) => {
+
+    // TODO make non static
     try {
         const response = await axios.get('https://api.spotify.com/v1/users/ramonavic/playlists', {
             headers: {
@@ -94,9 +129,6 @@ app.get('/spotify/get_playlist', async (req, res) => {
     } catch (err) {
         console.log(err)
     }
-
-    res.end('Something else went wrong')
-
 })
 
 const getUserInfo = async (accessToken) => {

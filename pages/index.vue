@@ -5,55 +5,39 @@
       <img :src="this.user.images[0].url" alt="profile_picture" class="profile_pic">
       <p>
         <a :href="this.user.profileUrl">Link to your profile</a>
-        <button v-on:click="logOut()" class="btn btn-primary">Log out</button>
-        <button v-on:click="checkAuthState()" class="btn btn-primary">Check Auth</button>
-        <button v-on:click="getPlaylist()" class="btn btn-primary">Get playlist</button>
       </p>
-    </template>
-    <template v-else>
-      <h1>Log in to Spotify using Authorization Code flow</h1>
-      <a href="/api/login" class="btn btn-primary">Log in with Spotify</a><br>
     </template>
   </div>
 </template>
 
 <script>
     import Vue from 'vue'
+    import { mapGetters } from 'vuex'
+    import { mapMutations } from 'vuex'
 
     export default {
-        name: 'Index',
+        name: 'Home',
         computed: {
-            user() {
-                return this.$store.getters.getUser
-            }
+            ...mapGetters({
+                user: 'user/getUser'
+            })
         },
         methods: {
-            logOut() {
-                this.$store.commit('mutateUser', null);
-                this.$router.push({ name: 'Home'})
-            },
 
-            checkAuthState() {
-                this.$axios.get('/api/authenticated', {
-                    withCredentials: true
-                })
-            },
-
-            async getPlaylist() {
-                const playlist = await this.$axios.get('/api/spotify/get_playlist')
-                console.log(playlist)
-            }
         },
+
+        // TODO bepalen of dit niet beter naar navigatie kan gaan. Mogelijk minpunt is dat hij dan 
+        // heel vaak wordt getriggered
         async created() {
+            console.log('inside created')
 
             const response = await this.$axios.get('/api/check_auth')
 
             if (response.data) {
-              console.log('commit to store')
-              this.$store.commit('mutateUser', response.data)
+              console.log('commit user data to store')
+              this.$store.commit('user/mutateUser', response.data)
             }
 
-            console.log('inside created')
             console.log('current state of store', this.$store.state.user)
         }
     }
