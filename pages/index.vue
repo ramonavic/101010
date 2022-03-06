@@ -31,7 +31,7 @@
         async created() {
             console.log('inside created')
 
-            const response = await this.$axios.get('/api/check_auth')
+            const response = await this.$axios.get('/api/users/check_auth')
 
             if (response.data) {
               console.log('commit user data to store')

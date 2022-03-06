@@ -53,6 +53,7 @@ export default {
     }
   },
 
+  // TODO probably not in use
   env: {
     spotifyid: process.env.SPOTIFY_CLIENT_ID,
     clientURL: process.env.CLIENT_URL

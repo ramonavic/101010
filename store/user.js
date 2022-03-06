@@ -16,7 +16,7 @@ export const mutations = {
 
 export const actions = {
     async logout({ commit }) {
-        await axios.post('/api/logout')
+        await axios.post('/api/users/logout')
         commit('mutateUser', null)
     }
 }

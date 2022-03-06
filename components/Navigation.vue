@@ -27,7 +27,7 @@
             <b-navbar-item tag="div">
                 <div class="buttons">
                     <div v-if="isNotLoggedIn">
-                        <a href="/api/login" class="button is-primary">
+                        <a href="/api/users/login" class="button is-primary">
                             <strong>Sign up</strong>
                         </a>
                         <a class="button is-light">
@@ -61,7 +61,6 @@ export default {
     methods: {
         logOut() {
             this.$store.dispatch('user/logout');
-            // this.$router.push({ name: 'Home'})
         }
     }
     

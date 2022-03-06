@@ -13,7 +13,7 @@
             </div>
         </form>
 
-        <form class="box admin-form" v-on:submit.prevent="insertPlaylist">
+        <form class="box admin-form" v-on:submit.prevent="addPlaylist">
             <h1> Insert Playlist </h1>
             <b-field label="Name">
                 <b-input placeholder="Name" v-bind-value="this.name" v-model="this.name"></b-input>
@@ -51,7 +51,7 @@ export default {
         async getPlaylistInfo(e) {
             console.log('inside get playlist info', e.currentTarget[0].value)
             const playlistId = e.target[0].value
-            const playlist = await this.$axios.get(`/api/spotify/get_playlist/${playlistId}`)
+            const playlist = await this.$axios.get(`/api/playlists/get_playlist/${playlistId}`)
             console.log(playlist)
 
             if (playlist.data) {
@@ -62,8 +62,8 @@ export default {
             }
         },
 
-        async insertPlaylist(e) {
-            const response = await this.$axios.post('/api/spotify/insert_playlist', {
+        async addPlaylist(e) {
+            const response = await this.$axios.post('/api/admin/add_playlist', {
                 params: {
                     id: this.id, 
                     name: this.name,
