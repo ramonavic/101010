@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
     <template v-if="this.user">
+      <h1> Music from the 🌍 curated with ❤️ </h1>
       <h1>Hi there, {{ this.user.display_name }}</h1>
       <img :src="this.user.images[0].url" alt="profile_picture" class="profile_pic">
       <p>

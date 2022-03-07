@@ -17,6 +17,7 @@
     "cookie-session": "^2.0.0",
     "core-js": "^3.19.3",
     "express": "^4.17.2",
+    "mysql2": "^2.3.3",
     "nodemon": "^2.0.15",
     "nuxt": "^2.15.8",
     "nuxt-buefy": "^0.4.18",

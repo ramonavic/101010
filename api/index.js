@@ -9,7 +9,7 @@ const cookieSecret = 'RhQ-5NtjNAphRzoEyJ-BmqKXATLFOMo8'
 
 const app = express()
 app.use(cookieParser(cookieSecret, { httpOnly: true }))
-
+app.use(express.json())
 
 module.exports = {
     path: '/api/',

@@ -1,6 +1,5 @@
 import Vuex from 'vuex';
 import Vue from 'vue';
-import axios from 'axios'
 
 Vue.use(Vuex);
 
@@ -16,7 +15,7 @@ export const mutations = {
 
 export const actions = {
     async logout({ commit }) {
-        await axios.post('/api/users/logout')
+        await this.$axios.post('/api/users/logout')
         commit('mutateUser', null)
     }
 }

@@ -16,17 +16,20 @@
         <form class="box admin-form" v-on:submit.prevent="addPlaylist">
             <h1> Insert Playlist </h1>
             <b-field label="Name">
-                <b-input placeholder="Name" v-bind-value="this.name" v-model="this.name"></b-input>
+                <b-input placeholder="Name" v-model="name"></b-input>
             </b-field>
             <b-field label="ID">
-                <b-input placeholder="ID" v-bind-value="this.id" v-model="this.id"></b-input>
+                <b-input placeholder="ID" v-model="id"></b-input>
             </b-field>
             <b-field label="Description">
-                <b-input placeholder="Description" v-bind-value="this.description" v-model="this.description"></b-input>
+                <b-input placeholder="Description" v-model="description"></b-input>
             </b-field>
              <b-field label="Image">
-                <b-input placeholder="imageUrl" v-bind-value="this.image" v-model="this.image"></b-input>
-            </b-field>   
+                <b-input placeholder="imageUrl" v-model="image"></b-input>
+            </b-field>  
+
+            <!-- TODO add tags -->
+            <b-button class="is-primary" v-on:click="addPlaylist">Submit</b-button>
         </form>
     </section>
 </template>
@@ -63,12 +66,13 @@ export default {
         },
 
         async addPlaylist(e) {
+            console.log('inside add playlist handler')
             const response = await this.$axios.post('/api/admin/add_playlist', {
                 params: {
-                    id: this.id, 
                     name: this.name,
                     image: this.image,
-                    description: this.description
+                    description: this.description,
+                    spotify_id: this.id,
                 }
             })
 

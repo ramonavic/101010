@@ -1,10 +1,10 @@
 <template>
-    <b-navbar class="bar">
+    <b-navbar class="bar is-transparent">
         <template #start>
-            <b-navbar-item href="#">
+            <b-navbar-item href="/">
                 Home
             </b-navbar-item>
-            <b-navbar-item href="#">
+            <b-navbar-item href="/listen">
                 Listen
             </b-navbar-item>
             <b-navbar-item href="#">
@@ -47,6 +47,9 @@
         </template>
     </b-navbar>
 </template>
+
+<style lang="scss" scoped>
+</style>
 
 <script>
 import { mapGetters } from 'vuex'

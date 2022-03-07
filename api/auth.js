@@ -11,5 +11,12 @@ export const spotifyAuth = async (req, res, next) => {
         }
     }
 
+    if (!req.signedCookies.access_token && !req.signedCookies.refresh_token) {
+        console.log('No cookies to continue')
+
+        // TODO add this to overall error handler in Vue
+        res.status(403).json({ status: 'error', message: 'not authorized in Spotify' })
+    }
+
     next()
 }

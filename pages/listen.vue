@@ -5,9 +5,17 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
+    computed: {
+        ...mapGetters({
+            playlists: 'playlists/getPlaylists'
+        })
+    },
+
     async created() {
-        const playlists = await this.$axios.get('/api/get_playlists')
+        this.$store.dispatch('playlists/fetchPlaylists')
     }
 }
 </script>

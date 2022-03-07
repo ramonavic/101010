@@ -6,7 +6,17 @@
 </template>
 
 <style lang="scss">
-// html {
-//     background-color: $background;
-// }
+// @import '@/_variables.scss';
+
+html {
+    background-color: $background;
+}
+
+h1 {
+    color: $grey-lighter;
+}
+
+p {
+    color: $grey-lighter;
+}
 </style>
