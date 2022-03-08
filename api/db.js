@@ -3,7 +3,7 @@ import mysql from 'mysql2'
 
 // TODO change to connection pool
 
-module.exports = class DB {
+export default class DB {
     constructor() {
         this.credentials = {
             host: process.env.MYSQL_HOST,

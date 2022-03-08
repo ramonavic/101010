@@ -3,7 +3,6 @@ import cookieParser from 'cookie-parser'
 import users from './routes/users'
 import playlists from './routes/playlists'
 
-
 // Migrate to .env files
 const cookieSecret = 'RhQ-5NtjNAphRzoEyJ-BmqKXATLFOMo8'
 
