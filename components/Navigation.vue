@@ -1,5 +1,5 @@
 <template>
-    <b-navbar class="bar is-transparent">
+    <b-navbar class="nav">
         <template #start>
             <b-navbar-item href="/">
                 Home
@@ -49,6 +49,9 @@
 </template>
 
 <style lang="scss" scoped>
+.nav {
+    margin-bottom: 3rem;
+}
 </style>
 
 <script>

@@ -100,15 +100,15 @@ a {
 }
 
 .card {
+  // box-shadow: 7px 7px 7px -9px #147a43;
   $card-border-color: lighten($grey-darker, 5);
-  box-shadow: none;
-  border: $border-width solid $card-border-color;
-  background-color: $grey-darker;
-  border-radius: $radius;
+  border: none;
+  background-color: #094646;
+  // border-radius: $radius;
 
   .card-image {
     img {
-      border-radius: $radius $radius 0 0;
+      border-radius: 6px;
     }
   }
 
@@ -124,7 +124,7 @@ a {
 
   .card-footer,
   .card-footer-item {
-    border-width: $border-width;
+    border-width: 1px;
     border-color: $card-border-color;
   }
 }

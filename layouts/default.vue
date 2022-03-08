@@ -1,15 +1,17 @@
 <template>
     <div>
         <Navigation />
-        <Nuxt />
+        <Nuxt class="container page" />
     </div>
 </template>
 
 <style lang="scss">
-// @import '@/_variables.scss';
-
 html {
     background-color: $background;
+}
+
+.page {
+    max-width: 80%;
 }
 
 h1 {

@@ -1,6 +1,6 @@
 <template class="container">
     <section>   
-        <form class="box admin-form" v-on:submit.prevent="getPlaylistInfo">
+        <form class="container box admin-form" v-on:submit.prevent="getPlaylistInfo">
             <b-field label="Get Playlist info">
                 <b-input placeholder="Fill in playlist id"></b-input>
             </b-field>
@@ -13,7 +13,7 @@
             </div>
         </form>
 
-        <form class="box admin-form" v-on:submit.prevent="addPlaylist">
+        <form class="container box admin-form" v-on:submit.prevent="addPlaylist">
             <h1> Insert Playlist </h1>
             <b-field label="Name">
                 <b-input placeholder="Name" v-model="name"></b-input>
@@ -36,7 +36,7 @@
 
 <style scoped>
 .admin-form {
-    width: 50%;
+    width: 70%;
 }
 </style>
 
