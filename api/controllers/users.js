@@ -1,4 +1,13 @@
 import axios from 'axios'
+import DB from '../db'
+import Mailer from '../mailer'
+import jwt from 'jsonwebtoken'
+import UserModel from '../Models/User'
+
+// TODO more queries to Model
+const db = new DB()
+const mailer = new Mailer()
+const User = new UserModel()
 
 // TODO do this for production
 const client_id = process.env.SPOTIFY_CLIENT_ID
@@ -7,6 +16,8 @@ const redirect_uri = process.env.REDIRECT_URI
 const scope = 'user-read-email user-read-private playlist-modify-public'
 
 export const checkAuth = (req, res) => {
+
+    // TODO expand this further with modal that tells user to auth again when spotify auth is gone
 
     console.log('inside check auth')
     if (req.signedCookies.user) {
@@ -17,7 +28,7 @@ export const checkAuth = (req, res) => {
     }
 }
 
-export const login = (req, res) => {
+export const connectSpotify = (req, res) => {
 
     const loginDetails = prepareLoginDetails()
 
@@ -26,6 +37,49 @@ export const login = (req, res) => {
     })
 
     res.send()
+}
+
+export const jwtLogin = async (req, res) => {
+    console.log('auth headers', req.headers)
+    const auth = req.headers.authorization
+    if (!auth || !auth.startsWith('Bearer ')) {
+        console.log('Bad auth request')
+        return res.status(403).json({ status: 'error', message: `Bad auth request` })
+    }
+
+    const token = auth.substring(7, auth.length)
+    let decoded
+
+    try {
+        console.log('decoding token')
+        decoded = jwt.verify(token, process.env.JWT_SECRET)
+    } catch (err) {
+        console.log(`Can't verify JWT`, err)
+        return res.status(403).json({ status: 'error', message: `Can't verify JWT`, error: err })
+    }
+
+    console.log('decoding succeeded')
+
+    if (!decoded.hasOwnProperty('email') || !decoded.hasOwnProperty('expiration')) {
+        return res.status(403).json({ status: 'error', message: `JWT token invalid` })
+    }
+
+    const { email, expiration } = decoded
+
+    const user = await User.findUser(email)
+
+    console.log('user found', user)
+    if (!user) {
+        return res.status(403).json({ status: 'error', message: `User doesn't exist` })
+    }
+
+    const expired = expiration > new Date()
+    if (expired) {
+        return res.status(403).json({ status: 'error', message: `Token expired` })
+    }
+
+    res.json(user)
+
 }
 
 export const spotifyCallback = async (req, res) => {
@@ -46,6 +100,32 @@ export const logout = async (req, res) => {
         .clearCookie('access_token')
         .clearCookie('refresh_token')
         .redirect('/')
+}
+
+export const register = async (req, res) => {
+    const { name, email, subscribeToMail } = req.body.params
+
+    const userExists = await db.single('SELECT * FROM users WHERE email = ? LIMIT 1', [email])
+
+    console.log(userExists)
+
+    if (userExists) {
+        sendMagicLoginLink(name, email)
+
+        res.json({ status: 'error', message: 'User already exists' })
+    } else {
+        const user = await db.query('INSERT INTO users (name, email, mail_subscription) VALUES (?, ?, ?)', [name, email, subscribeToMail])
+
+        if (!user.insertId) {
+            throw 'Could not insert user'
+        }
+
+        const hasSent = await sendMagicSubscriberLink(name, email)
+
+        if (hasSent) {
+            res.json({ status: 'success', message: 'User registered. Magic link sent.' })
+        }
+    }
 }
 
 const prepareLoginDetails = () => {
@@ -184,4 +264,30 @@ const getUserInfo = async (accessToken) => {
 
         return user
     }
+}
+
+export const sendMagicSubscriberLink = async (name, email) => {
+
+    // JWT expires in 1 hour
+    const expiration = new Date()
+    expiration.setHours(expiration.getHours() + 1)
+
+    const link = `${process.env.HOST_NAME}/?login_jwt=${jwt.sign({ email, expiration }, process.env.JWT_SECRET)}`
+
+    console.log('created magic link', link)
+    const body = `
+        <p>Hi ${name}, </p><br/>
+        <p>Welcome to 101010!</p>
+        <p>Here is <a href ="${link}"> your magic login link</a> </p>
+        <br />
+        <p> Cheers!</p>
+        <br /><br />
+        <p>101010</p>
+    `
+
+    const sent = await mailer.send(email, 'Magic login link', body)
+
+    console.log(sent)
+
+    return true
 }

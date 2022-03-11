@@ -1,4 +1,4 @@
-<template>
+<template :v-on:close-subscribe-modal="onCloseSubscribeModal">
     <b-navbar class="nav">
         <template #start>
             <b-navbar-item href="/">
@@ -27,11 +27,22 @@
             <b-navbar-item tag="div">
                 <div class="buttons">
                     <div v-if="isNotLoggedIn">
-                        <a href="/api/users/login" class="button is-primary">
-                            <strong>Sign up</strong>
+                        <a class="button is-light" @click="isSubscribeModalActive = true">
+                            Sign up
                         </a>
-                        <a class="button is-light">
-                            Log in
+                        <b-modal v-model="isSubscribeModalActive">
+
+                            <RegisterModal
+                                has-modal-card
+                                trap-focus
+                                aria-role="dialog"
+                                aria-label="Subscribe to 101010"
+                                close-button-aria-label="Close"
+                                aria-moda
+                            />
+                        </b-modal>
+                           <a href="/api/users/connect_spotify" class="button is-primary">
+                            <strong>Connect Spotify</strong>
                         </a>
                     </div>
                     <div v-else>
@@ -58,6 +69,14 @@
 import { mapGetters } from 'vuex'
 
 export default {
+    // components: {
+    //     RegisterModal
+    // },
+    data() {
+        return {
+            isSubscribeModalActive: false
+        }
+    },
     computed: {
         ...mapGetters({
             user: 'user/getUser',
@@ -67,6 +86,10 @@ export default {
     methods: {
         logOut() {
             this.$store.dispatch('user/logout');
+        },
+        onCloseSubscribeModal() {
+            console.log('inside close functio')
+            this.isSubscribeModalActive = false
         }
     }
     
