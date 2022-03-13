@@ -28,45 +28,6 @@
             ...mapGetters({
                 user: 'user/getUser'
             })
-        },
-        methods: {
-
-        },
-
-        // TODO bepalen of dit niet beter naar navigatie kan gaan. Mogelijk minpunt is dat hij dan 
-        // heel vaak wordt getriggered
-        async created() {
-            console.log('inside created', this.$route.query.login_jwt)
-            let response
-            const loginJwt = this.$route.query?.login_jwt
-            if (loginJwt) {
-
-              try {
-                response = await this.$axios.post('/api/users/jwt_login', {}, {
-                  headers: {
-                    Authorization: `Bearer ${loginJwt}`
-                  }
-                })
-              } catch (err) {
-                console.log(err)
-                if (err.message) {
-                  window.alert(`${err.message} ${err.error}`)
-                }
-              }
-             
-            } else {
-              response = await this.$axios.get('/api/users/check_auth')
-            }
-
-            console.log(response)
-
-            if (response.data) {
-              console.log('commit user data to store')
-              this.$store.commit('user/mutateUser', response.data)
-            }
- 
-
-            console.log('current state of store', this.$store.state.user)
         }
     }
 </script>

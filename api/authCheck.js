@@ -1,9 +1,12 @@
-import { getAccessTokenFromRefreshToken, setCookies } from './controllers/users'
+import { setCookies } from './controllers/users'
+import SpotifyModel from './models/Spotify'
 
-export const spotifyAuth = async (req, res, next) => {
+const Spotify = new SpotifyModel()
+
+export const spotifyAuthCheck = async (req, res, next) => {
     if (!req.signedCookies.access_token && req.signedCookies.refresh_token) {
         console.log('no access token', req.signedCookies.refresh_token)
-        const authData = await getAccessTokenFromRefreshToken(req.signedCookies.refresh_token)
+        const authData = await Spotify.getAccessTokenFromRefreshToken(req.signedCookies.refresh_token)
         if (authData.access_token) {
             await setCookies(res, authData)
         } else {
@@ -20,3 +23,5 @@ export const spotifyAuth = async (req, res, next) => {
 
     next()
 }
+
+

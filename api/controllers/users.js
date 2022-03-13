@@ -3,17 +3,14 @@ import DB from '../db'
 import Mailer from '../mailer'
 import jwt from 'jsonwebtoken'
 import UserModel from '../Models/User'
+import SpotifyModel from '../Models/Spotify'
 
-// TODO more queries to Model
-const db = new DB()
+
+// TODO create AuthModel
 const mailer = new Mailer()
 const User = new UserModel()
+const Spotify = new SpotifyModel()
 
-// TODO do this for production
-const client_id = process.env.SPOTIFY_CLIENT_ID
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET
-const redirect_uri = process.env.REDIRECT_URI
-const scope = 'user-read-email user-read-private playlist-modify-public'
 
 export const checkAuth = (req, res) => {
 
@@ -30,7 +27,7 @@ export const checkAuth = (req, res) => {
 
 export const connectSpotify = (req, res) => {
 
-    const loginDetails = prepareLoginDetails()
+    const loginDetails = Spotify.prepareLoginDetails()
 
     res.writeHead(302, {
         Location: 'https://accounts.spotify.com/authorize?' + loginDetails
@@ -86,7 +83,7 @@ export const spotifyCallback = async (req, res) => {
 
     const code = req.query.code;
 
-    const data = await getAccessToken(code)
+    const data = await Spotify.getAccessToken(code)
 
     if (data.access_token) {
         await setCookies(res, data)
@@ -102,10 +99,46 @@ export const logout = async (req, res) => {
         .redirect('/')
 }
 
+export const setCookies = async (res, data = {}) => {
+
+    if (data.access_token) {
+        res.cookie('access_token', data.access_token, {
+            httpOnly: true,
+            expires: new Date(Date.now() + data.expires_in * 1000),
+            secure: true,
+            signed: true
+        })
+
+        // TODO only do this when needed. Maybe transfer this to the middleware function
+        const user = await Spotify.getUserInfo(data.access_token)
+        console.log('got user', user)
+        res.cookie('user', user, {
+            httpOnly: true,
+            expires: new Date(date.setMonth(date.getMonth() + 6)), // 6 months later
+            secure: true,
+            signed: true
+        })
+    }
+
+    if (data.refresh_token) {
+        console.log('setting refresh token', data)
+
+        // TODO change this to be saved in a DB
+        res.cookie('refresh_token', data.refresh_token, {
+            httpOnly: true,
+            expires: new Date(date.setMonth(date.getMonth() + 6)),
+            secure: true,
+            signed: true
+        })
+    }
+
+    return user
+}
+
 export const register = async (req, res) => {
     const { name, email, subscribeToMail } = req.body.params
 
-    const userExists = await db.single('SELECT * FROM users WHERE email = ? LIMIT 1', [email])
+    const userExists = await User.findUser(email)
 
     console.log(userExists)
 
@@ -114,10 +147,12 @@ export const register = async (req, res) => {
 
         res.json({ status: 'error', message: 'User already exists' })
     } else {
-        const user = await db.query('INSERT INTO users (name, email, mail_subscription) VALUES (?, ?, ?)', [name, email, subscribeToMail])
 
-        if (!user.insertId) {
-            throw 'Could not insert user'
+        try {
+            await User.registerUserThroughEmail(name, email, subscribeToMail)
+        } catch (err) {
+            console.log(err)
+            res.status(404).json(err)
         }
 
         const hasSent = await sendMagicSubscriberLink(name, email)
@@ -128,153 +163,46 @@ export const register = async (req, res) => {
     }
 }
 
-const prepareLoginDetails = () => {
-    return new URLSearchParams({
-        client_id,
-        redirect_uri,
-        scope,
-        response_type: 'code',
-        show_dialog: true
-    })
+export const requestLogin = async (req, res) => {
+    const email = req.body.params.email
+
+    const user = await User.findUser(email)
+
+    console.log('user exists?', user)
+
+    if (user) {
+        sendMagicLoginLink(user.name, email)
+    }
+
+    // Always send sucess even if user doesnt exist
+    res.json({ status: 'success', message: 'Magic link sent.' })
+
 }
 
-const getAccessToken = async (code) => {
+export const sendMagicLoginLink = async (name, email) => {
 
-    const params = {
-        grant_type: 'authorization_code',
-        client_id,
-        client_secret,
-        code,
-        redirect_uri
-    }
+    const link = await generateLoginLink(email)
 
-    try {
-        const response = await axios({
-            url: 'https://accounts.spotify.com/api/token',
-            method: 'post',
-            params,
-            postHeaders: {
-                Accept: 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        })
-        const data = response.data
-        if (data) {
-            return {
-                ...data,
-                status: 'succesfully retrieved token and set cookies'
-            }
-        }
+    const body = `
+    <p>Hi ${name}, </p><br/>
+    <p>Here is <a href ="${link}"> your magic login link</a> </p>
+    <br />
+    <p> Cheers!</p>
+    <br /><br />
+    <p>101010</p>`
 
-    } catch (err) {
-        console.log(err)
-        return {
-            status: 'Something went wrong while retrieving access token'
-        }
-    }
-}
+    const sent = await mailer.send(email, 'Magic login link', body)
 
-export const getAccessTokenFromRefreshToken = async (refresh_token) => {
-    console.log('refresh token', refresh_token)
-    const params = {
-        grant_type: 'refresh_token',
-        client_id,
-        client_secret,
-        refresh_token
-    }
+    // TODO created else for when mail fails to send
+    console.log(sent)
 
-    try {
-        const response = await axios({
-            url: 'https://accounts.spotify.com/api/token',
-            method: 'post',
-            params,
-            postHeaders: {
-                Accept: 'application/json',
-                'Content-Type': 'application/x-www-form-urlencoded',
-                // 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')),
-            }
-        })
-
-        console.log('refresh token response', response.data)
-
-        if (response.data) {
-            return response.data
-        } else {
-            console.log(response)
-            return {
-                state: 'failed'
-            }
-        }
-    } catch (err) {
-        console.log(err)
-    }
-}
-
-export const setCookies = async (res, data = {}) => {
-    res.cookie('access_token', data.access_token, {
-        httpOnly: true,
-        expires: new Date(Date.now() + data.expires_in * 1000),
-        secure: true,
-        signed: true
-    })
-
-    // TODO only do this when needed. Maybe transfer this to the middleware function
-    const user = await getUserInfo(data.access_token)
-    console.log('got user', user)
-    res.cookie('user', user, {
-        httpOnly: true,
-        expires: new Date(Date.now() + 36000000), // + 600 minutes
-        secure: true,
-        signed: true
-    })
-
-    if (data.refresh_token) {
-        console.log('setting refresh token', data)
-
-        // TODO change this to be saved in a DB
-        res.cookie('refresh_token', data.refresh_token, {
-            httpOnly: true,
-            expires: new Date(Date.now() + data.expires_in * 1000),
-            secure: true,
-            signed: true
-        })
-    }
-
-    return user
-}
-
-const getUserInfo = async (accessToken) => {
-
-    const response = await axios.get('https://api.spotify.com/v1/me', {
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
-        }
-    })
-
-    if (response.data) {
-
-        const data = response.data
-        const user = {
-            name: data.display_name,
-            id: data.id,
-            images: data.images,
-            email: data.email,
-            profileUrl: data.external_urls.spotify
-        }
-
-        return user
-    }
+    return true
 }
 
 export const sendMagicSubscriberLink = async (name, email) => {
 
-    // JWT expires in 1 hour
-    const expiration = new Date()
-    expiration.setHours(expiration.getHours() + 1)
+    const link = await generateLoginLink(email)
 
-    const link = `${process.env.HOST_NAME}/?login_jwt=${jwt.sign({ email, expiration }, process.env.JWT_SECRET)}`
-
-    console.log('created magic link', link)
     const body = `
         <p>Hi ${name}, </p><br/>
         <p>Welcome to 101010!</p>
@@ -285,9 +213,24 @@ export const sendMagicSubscriberLink = async (name, email) => {
         <p>101010</p>
     `
 
-    const sent = await mailer.send(email, 'Magic login link', body)
+    // TODO created else for when mail fails to send
+    const sent = await mailer.send(email, 'Welcome to 101010', body)
 
     console.log(sent)
 
     return true
+}
+
+export const generateLoginLink = async (email) => {
+
+    // JWT expires in 1 hour
+    const expiration = new Date()
+    expiration.setHours(expiration.getHours() + 1)
+
+    const link = `${process.env.HOST_NAME}/?login_jwt=${jwt.sign({ email, expiration }, process.env.JWT_SECRET)}`
+
+    console.log('created magic link', link)
+
+    return link
+
 }

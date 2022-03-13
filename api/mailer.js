@@ -48,7 +48,12 @@ export default class Mailer {
 
             if (info.rejected.length) {
                 // Do something
+
+                console.log(`Could not send mailt to:  ${info.rejected}`)
+
             }
+
+            return info
         } catch (err) {
             console.error('Error while sending mail', err)
         }

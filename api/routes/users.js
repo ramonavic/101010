@@ -10,6 +10,7 @@ router
     .get('/callback', Users.spotifyCallback)
     .post('/users/register', Users.register)
     .post('/users/jwt_login', Users.jwtLogin)
+    .post('/users/request_login', Users.requestLogin)
 
 export default router
 

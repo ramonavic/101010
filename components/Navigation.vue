@@ -1,4 +1,4 @@
-<template :v-on:close-subscribe-modal="onCloseSubscribeModal">
+<template>
     <b-navbar class="nav">
         <template #start>
             <b-navbar-item href="/">
@@ -27,20 +27,42 @@
             <b-navbar-item tag="div">
                 <div class="buttons">
                     <div v-if="isNotLoggedIn">
-                        <a class="button is-light" @click="isSubscribeModalActive = true">
+                        <a class="button is-primary" @click="isRegisterModalActive = true">
                             Sign up
                         </a>
-                        <b-modal v-model="isSubscribeModalActive">
-
+                        <b-modal 
+                            v-model="isRegisterModalActive" 
+                            v-on:close-subscribe-modal="onCloseSubscribeModal"
+                            width:="700px"
+                        >
                             <RegisterModal
                                 has-modal-card
                                 trap-focus
                                 aria-role="dialog"
                                 aria-label="Subscribe to 101010"
                                 close-button-aria-label="Close"
-                                aria-moda
+                                aria-modal
                             />
                         </b-modal>
+                        <a class="button is-light" @click="isLoginModalActive = true">
+                            Login
+                        </a>
+                        <b-modal 
+                            v-model="isLoginModalActive" 
+                            width="700px" 
+                            v-on:close-login-modal="onCloseLoginModal"
+                        >
+
+                            <LoginModal
+                                has-modal-card
+                                trap-focus
+                                aria-role="dialog"
+                                aria-label="Subscribe to 101010"
+                                close-button-aria-label="Close"
+                                aria-modal
+                            />
+                        </b-modal>
+                      
                            <a href="/api/users/connect_spotify" class="button is-primary">
                             <strong>Connect Spotify</strong>
                         </a>
@@ -69,12 +91,10 @@
 import { mapGetters } from 'vuex'
 
 export default {
-    // components: {
-    //     RegisterModal
-    // },
     data() {
         return {
-            isSubscribeModalActive: false
+            isRegisterModalActive: false,
+            isLoginModalActive: false
         }
     },
     computed: {
@@ -83,13 +103,47 @@ export default {
             isNotLoggedIn: 'user/isNotLoggedIn'
         })
     },
+    async created() {
+        console.log('inside created', this.$route.query.login_jwt)
+        let response
+        const loginJwt = this.$route.query?.login_jwt
+        if (loginJwt) {
+
+            try {
+            response = await this.$axios.post('/api/users/jwt_login', {}, {
+                headers: {
+                    Authorization: `Bearer ${loginJwt}`
+                }
+            })
+            this.$router.replace({'query': null})
+            } catch (err) {
+                console.log(err)
+                if (err.message) {
+                    window.alert(`${err.message} ${err.error}`)
+                }
+            }
+            
+        } else {
+            response = await this.$axios.get('/api/users/check_auth')
+        }
+
+        if (response.data) {
+            console.log('commit user data to store')
+            this.$store.commit('user/mutateUser', response.data)
+        }
+        console.log('current state of store', this.$store.state.user)
+    },
     methods: {
         logOut() {
             this.$store.dispatch('user/logout');
         },
         onCloseSubscribeModal() {
             console.log('inside close functio')
-            this.isSubscribeModalActive = false
+            this.isRegisterModalActive = false
+        },
+        onCloseLoginModal() {
+            console.log('inside close functio')
+            this.isLoginModalActive = false
         }
     }
     
