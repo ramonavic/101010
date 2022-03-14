@@ -27,11 +27,44 @@
             <b-navbar-item tag="div">
                 <div class="buttons">
                     <div v-if="isNotLoggedIn">
-                        <a href="/api/users/login" class="button is-primary">
-                            <strong>Sign up</strong>
+                        <a class="button is-primary" @click="isRegisterModalActive = true">
+                            Sign up
                         </a>
-                        <a class="button is-light">
-                            Log in
+                        <b-modal 
+                            v-model="isRegisterModalActive" 
+                            v-on:close-subscribe-modal="onCloseSubscribeModal"
+                            width:="700px"
+                        >
+                            <RegisterModal
+                                has-modal-card
+                                trap-focus
+                                aria-role="dialog"
+                                aria-label="Subscribe to 101010"
+                                close-button-aria-label="Close"
+                                aria-modal
+                            />
+                        </b-modal>
+                        <a class="button is-light" @click="isLoginModalActive = true">
+                            Login
+                        </a>
+                        <b-modal 
+                            v-model="isLoginModalActive" 
+                            width="700px" 
+                            v-on:close-login-modal="onCloseLoginModal"
+                        >
+
+                            <LoginModal
+                                has-modal-card
+                                trap-focus
+                                aria-role="dialog"
+                                aria-label="Subscribe to 101010"
+                                close-button-aria-label="Close"
+                                aria-modal
+                            />
+                        </b-modal>
+                      
+                           <a href="/api/users/connect_spotify" class="button is-primary">
+                            <strong>Connect Spotify</strong>
                         </a>
                     </div>
                     <div v-else>
@@ -58,15 +91,57 @@
 import { mapGetters } from 'vuex'
 
 export default {
+    data() {
+        return {
+            isRegisterModalActive: false,
+            isLoginModalActive: false
+        }
+    },
     computed: {
         ...mapGetters({
             user: 'user/getUser',
             isNotLoggedIn: 'user/isNotLoggedIn'
         })
     },
+    async created() {
+        console.log('inside created', this.$route.query.login_jwt)
+        let response
+        const loginJwt = this.$route.query?.login_jwt
+        if (loginJwt) {
+
+            try {
+            response = await this.$axios.post('/api/users/jwt_login', {}, {
+                headers: {
+                    Authorization: `Bearer ${loginJwt}`
+                }
+            })
+            this.$router.replace({'query': null})
+            } catch (err) {
+                console.log(err)
+                if (err.message) {
+                    window.alert(`${err.message} ${err.error}`)
+                }
+            }
+            
+        } else {
+            response = await this.$axios.get('/api/users/check_auth')
+        }
+
+        if (response.data) {
+            console.log('commit user data to store')
+            this.$store.commit('user/mutateUser', response.data)
+        }
+        console.log('current state of store', this.$store.state.user)
+    },
     methods: {
         logOut() {
             this.$store.dispatch('user/logout');
+        },
+        onCloseSubscribeModal() {
+            this.isRegisterModalActive = false
+        },
+        onCloseLoginModal() {
+            this.isLoginModalActive = false
         }
     }
     

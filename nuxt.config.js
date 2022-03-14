@@ -18,8 +18,6 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    // 'buefy',
-    // '@/assets/_variables.scss',
     '@/assets/_overwrites.scss'
   ],
 

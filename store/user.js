@@ -29,8 +29,3 @@ export const getters = {
         return state.user === null
     }
 }
-
-// export const modules = {
-//     landing,
-//     navigation
-// }
