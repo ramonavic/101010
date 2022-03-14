@@ -1,4 +1,7 @@
 import axios from 'axios'
+import UserModel from './User'
+
+const User = new UserModel()
 
 export default class Spotify {
     constructor() {
@@ -18,7 +21,7 @@ export default class Spotify {
         })
     }
 
-    async getAccessToken(code) {
+    async getAccessToken(code, userId) {
 
         const params = {
             grant_type: 'authorization_code',
@@ -40,9 +43,13 @@ export default class Spotify {
             })
             const data = response.data
             if (data) {
+                if (data.refresh_token) {
+                    User.updateRefreshToken(userId, data.refresh_token)
+                }
+
                 return {
                     ...data,
-                    status: 'succesfully retrieved token and set cookies'
+                    status: 'succesfully refresh token'
                 }
             }
 
@@ -54,7 +61,7 @@ export default class Spotify {
         }
     }
 
-    async getAccessTokenFromRefreshToken(refresh_token) {
+    async getAccessTokenFromRefreshToken(refresh_token, userId) {
         console.log('refresh token', refresh_token)
         const params = {
             grant_type: 'refresh_token',
@@ -78,6 +85,11 @@ export default class Spotify {
             console.log('refresh token response', response.data)
 
             if (response.data) {
+                const refreshToken = response.data.refresh_token
+                if (data.refreshToken) {
+                    User.updateRefreshToken(userId, data.refreshToken)
+                }
+
                 return response.data
             } else {
                 console.log(response)

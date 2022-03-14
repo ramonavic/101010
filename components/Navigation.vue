@@ -138,11 +138,9 @@ export default {
             this.$store.dispatch('user/logout');
         },
         onCloseSubscribeModal() {
-            console.log('inside close functio')
             this.isRegisterModalActive = false
         },
         onCloseLoginModal() {
-            console.log('inside close functio')
             this.isLoginModalActive = false
         }
     }

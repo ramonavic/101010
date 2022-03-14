@@ -4,17 +4,29 @@ import SpotifyModel from './models/Spotify'
 const Spotify = new SpotifyModel()
 
 export const spotifyAuthCheck = async (req, res, next) => {
-    if (!req.signedCookies.access_token && req.signedCookies.refresh_token) {
-        console.log('no access token', req.signedCookies.refresh_token)
-        const authData = await Spotify.getAccessTokenFromRefreshToken(req.signedCookies.refresh_token)
-        if (authData.access_token) {
-            await setCookies(res, authData)
-        } else {
+
+    const user = req.signedCookies.user
+
+    if (user && !req.signedCookies.access_token) {
+
+        const refreshToken = User.getRefreshToken(user.id)
+
+        console.log(refreshToken)
+
+        if (refreshToken) {
+            console.log(`no access token but we have a refreshToken for user ${user.id}`, refreshToken)
+
+            const authData = await Spotify.getAccessTokenFromRefreshToken(refreshToken, user.id)
+            if (authData.access_token) {
+                await setCookies(res, authData)
+            }
+
             console.error('Didnt receive access token')
         }
+
     }
 
-    if (!req.signedCookies.access_token && !req.signedCookies.refresh_token) {
+    if (!user || !req.signedCookies.access_token) {
         console.log('No cookies to continue')
 
         // TODO add this to overall error handler in Vue

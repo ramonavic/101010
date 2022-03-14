@@ -75,17 +75,43 @@ export const jwtLogin = async (req, res) => {
         return res.status(403).json({ status: 'error', message: `Token expired` })
     }
 
-    res.json(user)
+    const cookieData = {}
+    cookieData.user = user
+
+    const responseData = { user }
+
+    if (user.refresh_token) {
+        const accessToken = Spotify.getAccessTokenFromRefreshToken(refresh_token, user.id)
+
+        if (accessToken === false) {
+            responseData.needsNewRefreshToken = true
+
+            await User.updateRefreshtoken(user.id, null)
+        }
+
+    }
+
+    res.json(responseData)
 
 }
 
 export const spotifyCallback = async (req, res) => {
+    const user = req.signedCookies.user
+    if (!user) {
+        res.status(403).send({ status: 'error', message: `You are not authenticated. Please login again first before connecting Spotify.` })
+    }
 
     const code = req.query.code;
 
-    const data = await Spotify.getAccessToken(code)
+    const data = await Spotify.getAccessToken(code, user.id)
 
     if (data.access_token) {
+
+        const spotifyUser = Spotify.getUserInfo(data.access_token)
+
+        // TODO testen en afmaken?
+        await User.updateWithSpotifyInfo(user.id, spotifyUser.id, spotifyUser.image)
+
         await setCookies(res, data)
         res.redirect('/')
     }
@@ -99,18 +125,20 @@ export const logout = async (req, res) => {
         .redirect('/')
 }
 
-export const setCookies = async (res, data = {}) => {
+export const setCookies = async (res, { user, access_token }) => {
 
-    if (data.access_token) {
+    if (access_token) {
         res.cookie('access_token', data.access_token, {
             httpOnly: true,
             expires: new Date(Date.now() + data.expires_in * 1000),
             secure: true,
             signed: true
         })
+    }
 
-        // TODO only do this when needed. Maybe transfer this to the middleware function
-        const user = await Spotify.getUserInfo(data.access_token)
+    if (user) {
+
+        // TODO only do this when needed. Maybe transfer this to the middleware function  
         console.log('got user', user)
         res.cookie('user', user, {
             httpOnly: true,
@@ -120,17 +148,17 @@ export const setCookies = async (res, data = {}) => {
         })
     }
 
-    if (data.refresh_token) {
-        console.log('setting refresh token', data)
+    // if (data.refresh_token) {
+    //     console.log('setting refresh token', data)
 
-        // TODO change this to be saved in a DB
-        res.cookie('refresh_token', data.refresh_token, {
-            httpOnly: true,
-            expires: new Date(date.setMonth(date.getMonth() + 6)),
-            secure: true,
-            signed: true
-        })
-    }
+    //     // TODO change this to be saved in a DB
+    //     res.cookie('refresh_token', data.refresh_token, {
+    //         httpOnly: true,
+    //         expires: new Date(date.setMonth(date.getMonth() + 6)),
+    //         secure: true,
+    //         signed: true
+    //     })
+    // }
 
     return user
 }
