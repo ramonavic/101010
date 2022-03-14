@@ -172,20 +172,6 @@ export const setUserCookie = (res, user) => {
     return true
 }
 
-// export const setCookies = (res, { user, accessToken }) => {
-//     console.log('setting access token for cookie', accessToken)
-
-
-//     if (user) {
-
-//         // TODO only do this when needed. Maybe transfer this to the middleware function  
-//         console.log('got user', user)
-
-//     }
-
-//     return true
-// }
-
 export const register = async (req, res) => {
     const { name, email, subscribeToMail } = req.body.params
 

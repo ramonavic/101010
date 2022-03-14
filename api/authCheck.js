@@ -14,11 +14,10 @@ export const spotifyAuthCheck = async (req, res, next) => {
         const refreshToken = await User.getRefreshToken(user.id)
 
         if (refreshToken) {
-            console.log(`no access token but we have a refreshToken for user ${user.id}`, refreshToken)
+            console.log(`no access token but we have a refreshToken for user ${user.id}`)
 
             const authData = await Spotify.getAccessTokenFromRefreshToken(refreshToken, user.id)
 
-            console.log('got new access token', authData)
             if (authData.access_token) {
                 await setAccessTokenCookie(res, authData)
                 return next()

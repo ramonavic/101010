@@ -66,7 +66,7 @@ export default class Spotify {
     }
 
     async getAccessTokenFromRefreshToken(refresh_token, userId) {
-        console.log('refresh token', refresh_token)
+
         const params = {
             grant_type: 'refresh_token',
             client_id: this.client_id,
@@ -81,12 +81,9 @@ export default class Spotify {
                 params,
                 postHeaders: {
                     Accept: 'application/json',
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    // 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')),
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
             })
-
-            console.log('refresh token response', response.data)
 
             if (response.data) {
 
