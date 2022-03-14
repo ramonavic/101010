@@ -46,7 +46,6 @@ export const jwtLogin = async (req, res) => {
 
     const token = auth.substring(7, auth.length)
     let decoded
-
     try {
         console.log('decoding token')
         decoded = jwt.verify(token, process.env.JWT_SECRET)
@@ -66,102 +65,126 @@ export const jwtLogin = async (req, res) => {
     const user = await User.findUser(email)
 
     console.log('user found', user)
+
+    // Verify JWT
     if (!user) {
         return res.status(403).json({ status: 'error', message: `User doesn't exist` })
     }
-
     const expired = expiration > new Date()
     if (expired) {
         return res.status(403).json({ status: 'error', message: `Token expired` })
     }
 
-    const cookieData = {}
-    cookieData.user = user
+    setUserCookie(res, user)
 
-    const responseData = { user }
+    if (user.spotify_id && user.refresh_token) {
+        console.log('user has refresh token', user.refresh_token)
 
-    if (user.refresh_token) {
         const accessToken = Spotify.getAccessTokenFromRefreshToken(refresh_token, user.id)
 
         if (accessToken === false) {
-            responseData.needsNewRefreshToken = true
-
+            user.needsNewRefreshToken = true
             await User.updateRefreshtoken(user.id, null)
         }
 
+        cookieData.accessToken = accessToken
     }
 
-    res.json(responseData)
+    setAccessTokenCookie(res, accessToken)
+
+    res.json(user)
 
 }
 
 export const spotifyCallback = async (req, res) => {
+
     const user = req.signedCookies.user
     if (!user) {
         res.status(403).send({ status: 'error', message: `You are not authenticated. Please login again first before connecting Spotify.` })
     }
 
     const code = req.query.code;
-
     const data = await Spotify.getAccessToken(code, user.id)
 
     if (data.access_token) {
 
-        const spotifyUser = Spotify.getUserInfo(data.access_token)
+        const spotifyUser = await Spotify.getUserInfo(data.access_token)
+        console.log('after get user info', spotifyUser)
 
-        // TODO testen en afmaken?
-        await User.updateWithSpotifyInfo(user.id, spotifyUser.id, spotifyUser.image)
+        // TODO fix images by uploading it to a CDN, but not important
+        // let image = spotifyUser.images[0]?.url
+        // image = /(.*(.jpg|.png|.jpeg))\?/.exec(image)[1]
 
-        await setCookies(res, data)
+        const updatedUser = await User.updateWithSpotifyInfo(user.id, spotifyUser.id)
+
+        if (!updatedUser) {
+            console.log(`User not updated with Spotify info`)
+        }
+
+        user.spotify_id = spotifyUser.id
+        user.image = image
+
+        setUserCookie(res, user)
+        setAccessTokenCookie(res, data)
         res.redirect('/')
     }
 }
 
 export const logout = async (req, res) => {
+    console.log('inside logout')
     res
         .clearCookie('user')
         .clearCookie('access_token')
-        .clearCookie('refresh_token')
         .redirect('/')
 }
 
-export const setCookies = async (res, { user, access_token }) => {
-
-    if (access_token) {
-        res.cookie('access_token', data.access_token, {
-            httpOnly: true,
-            expires: new Date(Date.now() + data.expires_in * 1000),
-            secure: true,
-            signed: true
-        })
+export const setAccessTokenCookie = async (res, { access_token, expires_in }) => {
+    if (!access_token || !expires_in) {
+        throw `Can't set access token due to missing variables ${access_token} or ${expires_in}`
     }
 
-    if (user) {
+    res.cookie('access_token', access_token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + expires_in * 1000),
+        secure: true,
+        signed: true
+    })
 
-        // TODO only do this when needed. Maybe transfer this to the middleware function  
-        console.log('got user', user)
-        res.cookie('user', user, {
-            httpOnly: true,
-            expires: new Date(date.setMonth(date.getMonth() + 6)), // 6 months later
-            secure: true,
-            signed: true
-        })
-    }
-
-    // if (data.refresh_token) {
-    //     console.log('setting refresh token', data)
-
-    //     // TODO change this to be saved in a DB
-    //     res.cookie('refresh_token', data.refresh_token, {
-    //         httpOnly: true,
-    //         expires: new Date(date.setMonth(date.getMonth() + 6)),
-    //         secure: true,
-    //         signed: true
-    //     })
-    // }
-
-    return user
+    console.log('set access token cookie')
 }
+
+export const setUserCookie = (res, user) => {
+    if (!user) {
+        console.log(user)
+        throw `Failed setting user cookie`
+    }
+
+    const expires = new Date()
+    res.cookie('user', user, {
+        httpOnly: true,
+        expires: new Date(expires.setMonth(expires.getMonth() + 6)), // 6 months later
+        secure: true,
+        signed: true
+    })
+
+    console.log('set user cookie')
+
+    return true
+}
+
+// export const setCookies = (res, { user, accessToken }) => {
+//     console.log('setting access token for cookie', accessToken)
+
+
+//     if (user) {
+
+//         // TODO only do this when needed. Maybe transfer this to the middleware function  
+//         console.log('got user', user)
+
+//     }
+
+//     return true
+// }
 
 export const register = async (req, res) => {
     const { name, email, subscribeToMail } = req.body.params
@@ -192,6 +215,7 @@ export const register = async (req, res) => {
 }
 
 export const requestLogin = async (req, res) => {
+    console.log('requesting login')
     const email = req.body.params.email
 
     const user = await User.findUser(email)
@@ -204,7 +228,6 @@ export const requestLogin = async (req, res) => {
 
     // Always send sucess even if user doesnt exist
     res.json({ status: 'success', message: 'Magic link sent.' })
-
 }
 
 export const sendMagicLoginLink = async (name, email) => {

@@ -4,9 +4,9 @@
       <h1> Music from the 🌍 curated with ❤️ </h1>
       <h1>Hi there, {{ this.user.name }}</h1>
       <div v-if="this.user.spotify_id">
-        <img :src="this.user.images[0].url" alt="profile_picture" class="profile_pic">
+        <!-- <img :src="this.user.image" alt="profile_picture" class="profile_pic"> -->
         <p>
-          <a :href="this.user.profileUrl">Link to your profile</a>
+          <a :href="getSpotifyProfile">Link to your profile</a>
         </p>
       </div>
       <section v-else>
@@ -27,7 +27,10 @@
         computed: {
             ...mapGetters({
                 user: 'user/getUser'
-            })
+            }),
+            getSpotifyProfile() {
+              return `https://open.spotify.com/user/${this.user.spotify_id}`
+            }
         }
     }
 </script>

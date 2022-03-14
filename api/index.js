@@ -17,12 +17,13 @@ module.exports = {
     handler: app
 }
 
-// Setup routes
-app.use(users)
-app.use(playlists)
-
 app.use('*', (req, res, next) => {
     console.log('current path: ', req.url)
     next()
 })
+
+// Setup routes
+app.use(users)
+app.use(playlists)
+
 

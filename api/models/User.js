@@ -22,6 +22,7 @@ export default class User {
     }
 
     async updateRefreshToken(id = null, token = null) {
+        console.log('updating refresh token in mysql', id, token)
         if (!id) {
             throw `Cant update refreshtoken in DB`
         }
@@ -30,11 +31,12 @@ export default class User {
             `UPDATE users 
                 SET refresh_token = ?
             WHERE id = ?`,
-            [id, token]
+            [token, id]
         )
 
-        console.log(update)
-
+        if (update.affectedRows < 1) {
+            throw `MySQL didnt update User with refresh_token`
+        }
     }
 
     async getRefreshToken(id = null) {
@@ -42,21 +44,28 @@ export default class User {
             throw `No user id passed while getting refresh token`
         }
 
-        return this.db.single(`SELECT refresh_token FROM users WHERE id = ?`, [id])
+        const result = await this.db.single(`SELECT refresh_token FROM users WHERE id = ? LIMIT 1`, [id])
+        return result.refresh_token
     }
 
     async updateWithSpotifyInfo(userId, spotifyId, image) {
 
-        return this.db.query(
+        const update = this.db.query(
             `UPDATE users 
             SET spotify_id = ?,
                 image = ?
             WHERE id = ?`,
             [
-                userId,
                 spotifyId,
-                image
+                image,
+                userId
             ]
         )
+
+        if (update.affectedRows < 1) {
+            return false
+        }
+
+        return true
     }
 }

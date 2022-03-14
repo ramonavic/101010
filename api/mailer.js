@@ -15,6 +15,8 @@ export default class Mailer {
                 secure: false // NOTE: maybe put this true for production (locally it gives an error)
                 // SEE ALSO: https://nodemailer.com/smtp/testing/#examples
             });
+
+            console.log('created mailer transport for ', this.transport.options.host)
         } else {
             throw 'Mail credentials not available. Can\'t setup mailer'
         }

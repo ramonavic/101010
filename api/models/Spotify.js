@@ -22,6 +22,10 @@ export default class Spotify {
     }
 
     async getAccessToken(code, userId) {
+        if (!code || !userId) {
+            throw `Invalid params supplied to get access token`
+        }
+
 
         const params = {
             grant_type: 'authorization_code',
@@ -42,10 +46,10 @@ export default class Spotify {
                 }
             })
             const data = response.data
+
+            console.log('got access token', response.data)
             if (data) {
-                if (data.refresh_token) {
-                    User.updateRefreshToken(userId, data.refresh_token)
-                }
+                data.refresh_token && User.updateRefreshToken(userId, data.refresh_token)
 
                 return {
                     ...data,
@@ -67,7 +71,7 @@ export default class Spotify {
             grant_type: 'refresh_token',
             client_id: this.client_id,
             client_secret: this.client_secret,
-            refresh_token: this.refresh_token
+            refresh_token
         }
 
         try {
@@ -85,9 +89,11 @@ export default class Spotify {
             console.log('refresh token response', response.data)
 
             if (response.data) {
+
+                // Spotify will sometimes return a new refresh token
                 const refreshToken = response.data.refresh_token
-                if (data.refreshToken) {
-                    User.updateRefreshToken(userId, data.refreshToken)
+                if (refreshToken) {
+                    User.updateRefreshToken(userId, refreshToken)
                 }
 
                 return response.data
