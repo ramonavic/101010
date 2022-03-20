@@ -35,8 +35,8 @@
     }
 </script>
 
-<style scoped>
-h3 {
+<style>
+/* h3 {
     margin: 40px 0 0;
 }
 
@@ -52,7 +52,7 @@ li {
 
 a {
     color: #42b983;
-}
+} */
 
 .profile_pic {
     width: 100px;

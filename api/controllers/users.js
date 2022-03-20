@@ -77,20 +77,20 @@ export const jwtLogin = async (req, res) => {
 
     setUserCookie(res, user)
 
+
     if (user.spotify_id && user.refresh_token) {
         console.log('user has refresh token', user.refresh_token)
 
-        const accessToken = Spotify.getAccessTokenFromRefreshToken(refresh_token, user.id)
+        const accessToken = await Spotify.getAccessTokenFromRefreshToken(user.refresh_token, user.id)
 
         if (accessToken === false) {
             user.needsNewRefreshToken = true
             await User.updateRefreshtoken(user.id, null)
         }
 
-        cookieData.accessToken = accessToken
-    }
+        setAccessTokenCookie(res, accessToken)
 
-    setAccessTokenCookie(res, accessToken)
+    }
 
     res.json(user)
 

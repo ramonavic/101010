@@ -83,7 +83,9 @@
 
 <style lang="scss" scoped>
 .nav {
-    margin-bottom: 3rem;
+    box-shadow: unset;
+    border-bottom: 1px solid $grey-dark;
+    border-radius: 0px;
 }
 </style>
 

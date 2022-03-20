@@ -27,11 +27,11 @@
 
 <style scoped lang="scss">
 .card {
-    margin-bottom: 2rem;
+    margin: 0 2rem 2rem 0;
     max-width: 400px !important;
     background-color: #0a0a0a;
     border: 1px solid $grey-dark;
-    box-shadow: 14px 14px 22px -6px #094646;
+    box-shadow: 18px 18px 22px 5px $black;
 
     .over-image {
         position: absolute;
