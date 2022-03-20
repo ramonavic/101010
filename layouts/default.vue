@@ -6,10 +6,9 @@
 </template>
 
 <style lang="scss">
-html,
-body {
-    background-color: $background;
-}
+// body {
+//     background-color: $background;
+// }
 
 .page {
     margin: 2rem;
