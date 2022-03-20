@@ -31,7 +31,7 @@
     max-width: 400px !important;
     background-color: #0a0a0a;
     border: 1px solid $grey-dark;
-    box-shadow: 14px 14px 22px -6px #094646;
+    box-shadow: 18px 18px 6px -3px $grey-darkest;
 
     .over-image {
         position: absolute;
