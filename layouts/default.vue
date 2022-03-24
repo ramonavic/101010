@@ -6,12 +6,12 @@
 </template>
 
 <style lang="scss">
-html {
-    background-color: $background;
-}
+// body {
+//     background-color: $background;
+// }
 
 .page {
-    max-width: 80%;
+    margin: 2rem;
 }
 
 h1 {

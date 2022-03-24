@@ -1,8 +1,11 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
+
+// Import routes
 import users from './routes/users'
 import playlists from './routes/playlists'
-import cors from 'cors'
+import admin from './routes/admin'
 
 // Migrate to .env files
 const cookieSecret = 'RhQ-5NtjNAphRzoEyJ-BmqKXATLFOMo8'
@@ -25,5 +28,6 @@ app.use('*', (req, res, next) => {
 // Setup routes
 app.use(users)
 app.use(playlists)
+app.use(admin)
 
 

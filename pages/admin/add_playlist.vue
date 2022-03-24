@@ -1,5 +1,5 @@
 <template class="container">
-    <section>   
+    <section class="forms-container">   
         <form class="container box admin-form" v-on:submit.prevent="getPlaylistInfo">
             <b-field label="Get Playlist info">
                 <b-input v-model="id" placeholder="Fill in playlist id"></b-input>
@@ -34,9 +34,16 @@
     </section>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .admin-form {
-    width: 70%;
+    max-width: 30rem;
+    margin: 1rem;
+}
+
+.forms-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2rem;
 }
 </style>
 
@@ -54,7 +61,7 @@ export default {
         async getPlaylistInfo() {
             const playlistId = this.id
             console.log('getting playlist info for: ', this.id)
-            const playlist = await this.$axios.get(`/api/playlists/get_playlist/${playlistId}`)
+            const playlist = await this.$axios.get(`/api/admin/get_playlist/${playlistId}`)
             console.log(playlist)
 
             if (playlist.data) {

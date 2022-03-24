@@ -1,5 +1,5 @@
 <template>
-    <section class="container">
+    <section class="container playlists-container">
         <PlaylistCard 
             v-bind:key="playlist.id" 
             v-for="playlist in playlists" 
@@ -9,7 +9,13 @@
     </section>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.playlists-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 2rem;
+    background-color: $background;
+}
 </style>
 
 <script>

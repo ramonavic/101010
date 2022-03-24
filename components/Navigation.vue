@@ -10,17 +10,14 @@
             <b-navbar-item href="#">
                 Saved Playlists
             </b-navbar-item>
-            <b-navbar-item href="/admin">
-                Admin
-            </b-navbar-item>
-            <!-- <b-navbar-dropdown label="Info">
-                <b-navbar-item href="#">
-                    About
+            <b-navbar-dropdown label="Admin">
+                <b-navbar-item href="/admin/add_playlist">
+                    Add Playlist
                 </b-navbar-item>
-                <b-navbar-item href="#">
-                    Contact
+                <b-navbar-item href="/admin/tags">
+                    Tag Playlist
                 </b-navbar-item>
-            </b-navbar-dropdown> -->
+            </b-navbar-dropdown>
         </template>
 
         <template #end>
@@ -83,7 +80,9 @@
 
 <style lang="scss" scoped>
 .nav {
-    margin-bottom: 3rem;
+    box-shadow: unset;
+    border-bottom: 1px solid $grey-dark;
+    border-radius: 0px;
 }
 </style>
 
