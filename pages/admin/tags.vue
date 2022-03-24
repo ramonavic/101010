@@ -1,13 +1,44 @@
 <template class="container">
     <section class="forms-container">   
-        <form class="container box admin-form" v-on:submit.prevent="getPlaylistInfo">
-        <b-field label="Rounded">
-            <b-select placeholder="Select a Playlist" rounded>
-                
-                
-                <option :v-for="playlist in playlists" :v-model="playlist.id">{{playlist.name}}</option>
-            </b-select>
+        <form class="container box admin-form">
+        <b-field label="Playlist">
+             <b-taginput 
+                v-model="chosenPlaylist" 
+                placeholder="Choose playlist"
+                autocomplete
+                open-on-focus
+                :data="filteredPlaylists"
+                @typing="getFilteredPlaylists"
+                icon="label"
+                maxtags=1  
+            >
+            </b-taginput>
         </b-field>
+
+        {{this.playlistNames }}
+        
+        
+        <b-field label="Tags">
+            <b-taginput 
+                v-model="chosenTags" 
+                aria-close-label="Delete tag"
+                placeholder="Add new or existing tag"
+                ellipsis
+                autocomplete
+                allow-new
+                open-on-focus
+                :data="filteredTagNames"
+                @typing="getFilteredTags"
+                icon="label"    
+            >
+            </b-taginput>
+        </b-field>
+        <br />
+        <h2> Current tag names </h2>
+        {{ this.tagNames}}
+        <br />
+        <hr />
+        <b-button v-on:click="addTagsToPlaylist"> Add tags</b-button>
         </form>
     </section>
 </template>
@@ -31,23 +62,100 @@ import { mapGetters } from 'vuex'
 export default {
     data() {
         return {
-            tags: [],
-            name: null,
-            id: null, 
-            image: null,
-            description: null
+            chosenTags: [],
+            chosenPlaylist: []
         }
     },
     computed: {
         ...mapGetters({
-            tags: 'tags/getTags'
-        })
+            tags: 'tags/getTags',
+            tagNames: 'tags/getTagNames',
+            playlistNames: 'playlists/getPlaylistNames',
+            playlists: 'playlists/getPlaylists'
+        }),
+        filteredTagNames: {
+            get() {
+                return this.$store.getters["tags/getFilteredTagNames"]
+            },
+            set(query) {
+                this.$store.commit('tags/SET_FILTERED_TAGS', query)
+            }
+        },
+
+        // TODO it's better to filter in playlists instead of playlistNames so that we 
+        // dont have to find a playlist by name later. 
+        filteredPlaylists: {
+            get() {
+                return this.$store.getters["playlists/getFilteredPlaylistNames"]
+            },
+            set(query) {
+                this.$store.commit('playlists/SET_FILTERED_PLAYLISTS', query)
+            }
+        }
+
     },
-    created() {
-        this.$store.dispatch('tags/fetchTags')
+    async beforeMount() {
+        this.updateData()        
     },
     methods: {
 
+        updateData() {
+            this.$store.dispatch('tags/fetchTags')
+            this.$store.dispatch('playlists/fetchPlaylists')
+        },
+
+        addTagsToPlaylist() {
+            console.log('submitting tags', this.chosenTags, this.chosenPlaylist)
+
+            const tagsForPlaylist = this.prepareTagsForPlaylist()
+            console.log(tagsForPlaylist)
+            const data = {
+                playlistId: this.getPlaylistIdForName(),
+                tagsForPlaylist
+            }
+
+            this.$store.dispatch('tags/addTagsToPlaylist', data)
+        },
+
+        getFilteredTags(text) {
+            this.filteredTagNames = this.tagNames.filter((name) => {
+                return name
+                    .toString()
+                    .toLowerCase()
+                    .indexOf(text.toLowerCase()) >= 0
+            })
+        },
+
+         getFilteredPlaylists(text) {
+            this.filteredPlaylists = this.playlistNames.filter((name) => {
+                return name
+                    .toString()
+                    .toLowerCase()
+                    .indexOf(text.toLowerCase()) >= 0
+            })
+        },
+
+        getPlaylistIdForName() {
+            const playlist = this.playlists.find((playlist) => playlist.name === this.chosenPlaylist[0])
+            return playlist.id 
+        },
+
+        prepareTagsForPlaylist() {
+            return this.chosenTags.map((chosenTagName) => {
+                const existingTag = this.tags.find((tag) => tag.name === chosenTagName)
+                console.log('existing tag', existingTag)
+                if (!existingTag) {
+
+                    console.log('chosen tag', chosenTagName)
+                    return {
+                        chosenTagName,
+                        isNew: true
+                    }
+                }
+                return existingTag
+            })
+        }
+        
     }
 }
 </script>

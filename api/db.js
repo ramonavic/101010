@@ -7,7 +7,8 @@ const credentials = {
     database: process.env.MYSQL_DATABASE,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
-    connectionLimit: 10
+    connectionLimit: 10,
+    multipleStatements: true
 }
 
 let pool
@@ -40,7 +41,7 @@ export default class DB {
             return results
         } catch (err) {
             console.error(err)
-            return
+            return err
         }
     }
 
@@ -50,7 +51,7 @@ export default class DB {
             return results[0]
         } catch (err) {
             console.error(err)
-            return
+            return err
         }
     }
 }
