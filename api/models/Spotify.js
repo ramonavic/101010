@@ -79,7 +79,7 @@ export default class Spotify {
             grant_type: 'refresh_token',
             client_id: this.client_id,
             client_secret: this.client_secret,
-            state: this.state,
+            // state: this.state,
             refresh_token
         }
 
@@ -94,7 +94,9 @@ export default class Spotify {
                 }
             })
 
-            if (response.data?.state === this.state) {
+            console.log('got data from accestoken', response.data)
+
+            if (response.data.access_token) {
 
                 // Spotify will sometimes return a new refresh token
                 const refreshToken = response.data.refresh_token
@@ -104,7 +106,7 @@ export default class Spotify {
 
                 return response.data
             } else {
-                console.log(response)
+                console.log('didnt receive token through refresn token')
                 return {
                     state: 'failed'
                 }

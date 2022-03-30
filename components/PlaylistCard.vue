@@ -23,7 +23,10 @@
                 </span> -->
             </div>
         </div>
-        <iframe :src="embedLink" class="playlist" width="100%" height="250" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+
+        <b-button v-on:click="onClickPlay"> Play</b-button>
+
+        <!-- <iframe :src="embedLink" class="playlist" width="100%" height="250" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe> -->
         <footer class="card-footer">
 
             <!-- TODO hier moet een Spotify icoon komen -->
@@ -99,6 +102,11 @@
 
 <script>
 export default {
+    data() {
+        return {
+            spotifyUser: 'ramonavic',
+        }
+    },
     props: {
         playlist: {
             type: Object,
@@ -117,6 +125,30 @@ export default {
             return {
                 'background-image': `url(${this.playlist.image})`,
             }
+        },
+    },
+    methods: {
+        onClickPlay() {
+            // Find the player component thats attached to default.vue
+            const rootPage = this.$root.$children.find((child) => {
+                console.log('child', child)
+
+                // Look for property isRoot
+                return child.isRoot
+            })
+
+            console.log(rootPage)
+
+            const player = rootPage?.$refs?.player
+
+            if (player) {
+                player.preparePlay(this.getPlaylistUri())
+            } else {
+                // TODO throw through confirm
+            }
+        },
+        getPlaylistUri() {
+            return `spotify:user:${this.spotifyUser}:playlist:${this.playlist.spotify_id}`
         },
     },
 }

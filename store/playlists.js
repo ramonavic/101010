@@ -28,6 +28,9 @@ export const actions = {
         const response = await this.$axios.get('/api/playlists/index')
         console.log('fetched playlists', response.data)
         commit('UPDATE_PLAYLISTS', response.data.playlists)
+
+        // TODO Determine if this can better be done in a more generic place 
+        // f.e. when we update the access token through refresh token
         await commit('user/SET_ACCESS_TOKEN', response.data.accessToken, { root: true })
     },
 
