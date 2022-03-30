@@ -1,20 +1,29 @@
 <template>
     <div class="container card">
         <div class="top">
-            <div class="card-image" :style="getBackground()"></div>
+            <div class="card-image" :style="backgroundImage"></div>
             <div class="title over-image"> {{playlist.name}} </div>
             <div class="card-content">
-                <div class="content">
-                {{playlist.description}}
+                <!-- {{playlist.description}} -->
 
-                <!-- TODO make tag component -->
-                <a href="#">#css</a> <a href="#">#responsive</a>
-                <br>
-                <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
-                </div>
+                <b-taglist>
+                    <template v-for="tag in playlist.tags">
+                        <b-tag v-if="tag.is_theme" :key="tag.id" type="is-primary">
+                            {{tag.name}}
+                        </b-tag>
+                        <b-tag  v-else :key="tag.id" type="is-grey">
+                            {{tag.name}}
+                        </b-tag>
+                    </template>
+                </b-taglist>
+                <!-- <br> -->
+                <!-- <span> 
+                    <b-icon icon="clock"></b-icon>
+                    <time datetime="2016-1-1">{{createdDate}}</time>
+                </span> -->
             </div>
         </div>
-        <iframe :src="getEmbedLink()" class="playlist" width="100%" height="250" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+        <iframe :src="embedLink" class="playlist" width="100%" height="250" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
         <footer class="card-footer">
 
             <!-- TODO hier moet een Spotify icoon komen -->
@@ -32,6 +41,7 @@
     background-color: #0a0a0a;
     border: 1px solid $grey-dark;
     box-shadow: 18px 18px 22px 5px $black;
+    display: inline-block;
 
     .over-image {
         position: absolute;
@@ -43,7 +53,6 @@
     .top {
         position: relative;
         margin: 1rem;
-        // background-color: #0a0a0a;
     }
 
     .card-image {
@@ -59,11 +68,13 @@
 
     .card-content {
         position: absolute;
-        bottom: 1rem;
-        left: 2rem;
+        bottom: 0rem;
+        right: 0.75rem;
         z-index: 2;
         padding: 0;
         color: $white;
+        display: flex;
+        justify-content: flex-end;
 
         a {
             color: $white;
@@ -78,6 +89,11 @@
         padding: 0 1rem;
         background-color: #0a0a0a;
     }
+
+    .tags {
+        margin-bottom: 0;
+        font-size: 0.88rem;
+    }
 }
 </style>
 
@@ -85,22 +101,24 @@
 export default {
     props: {
         playlist: {
-            type: Object
+            type: Object,
         },
-        playlistLength: Number
+        playlistLength: Number,
     },
-
-    methods: {
-        getEmbedLink() {
+    computed: {
+        createdDate() {
+            return new Date(this.playlist.created_at).toDateString()
+        },
+        embedLink() {
             return `https://open.spotify.com/embed/playlist/${this.playlist.spotify_id}?utm_source=generator&theme=0`
         },
-        getBackground() {
+        backgroundImage() {
             console.log('getting baxkground', this.playlist.image)
             return {
-                "background-image": `url(${this.playlist.image})`
+                'background-image': `url(${this.playlist.image})`,
             }
-        }
-    }
+        },
+    },
 }
 </script>
 

@@ -25,15 +25,16 @@ export const mutations = {
 export const actions = {
 
     async fetchPlaylists({ commit }) {
-        const playlists = await this.$axios.get('/api/playlists/index')
-        console.log('fetched playlists', playlists.data)
-        commit('UPDATE_PLAYLISTS', playlists.data)
+        const response = await this.$axios.get('/api/playlists/index')
+        console.log('fetched playlists', response.data)
+        commit('UPDATE_PLAYLISTS', response.data.playlists)
+        await commit('user/SET_ACCESS_TOKEN', response.data.accessToken, { root: true })
     },
 
     // TODO make later
     async toggleSubscription({ commit }) {
         // await axios.post('/api/users/logout')
-        // commit('mutateUser', null)
+        // commit('MUTATE_USER', null)
     }
 }
 

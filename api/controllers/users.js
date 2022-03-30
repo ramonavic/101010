@@ -122,7 +122,7 @@ export const spotifyCallback = async (req, res) => {
         }
 
         user.spotify_id = spotifyUser.id
-        user.image = image
+        // user.image = image
 
         setUserCookie(res, user)
         setAccessTokenCookie(res, data)

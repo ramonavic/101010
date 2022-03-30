@@ -5,10 +5,22 @@ export default class Playlist {
         this.db = new DB()
     }
 
+    /**
+     * This function will return all the playlists that have not been deleted
+     * @returns An array of objects.
+     */
     async getAll() {
-        return await this.db.query('SELECT * FROM playlists')
+        return await this.db.query(
+            `SELECT * FROM playlists WHERE deleted_at IS NULL`
+        )
     }
 
+    /**
+     * Given a spotify id, check if the playlist exists in the database
+     * 
+     * @param spotifyId - The Spotify ID of the playlist to check for.
+     * @returns A boolean value.
+     */
     async checkIfExists(spotifyId) {
         const playlistExists = await this.db.single(
             'SELECT EXISTS(SELECT 1 FROM playlists WHERE spotify_id = ? LIMIT 1)',
