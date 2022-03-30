@@ -15,6 +15,7 @@ export const mutations = {
 
     SET_ACCESS_TOKEN(state, payload) {
         state.accessToken = payload
+        console.log(state)
     }
 }
 
@@ -31,6 +32,7 @@ export const getters = {
     },
 
     getAccessToken(state) {
+        console.log('getting acess token from store', state.accessToken)
         return state.accessToken
     },
 

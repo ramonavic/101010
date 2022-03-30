@@ -136,7 +136,7 @@ export const setAccessTokenCookie = async (res, { access_token, expires_in }) =>
         throw `Can't set access token due to missing variables ${access_token} or ${expires_in}`
     }
 
-    res.cookie('access_token', { access_token }, {
+    res.cookie('access_token', access_token, {
         httpOnly: true,
         expires: new Date(Date.now() + expires_in * 1000),
         secure: true,
