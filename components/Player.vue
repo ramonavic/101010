@@ -1,6 +1,20 @@
 <template>
-    <section class="player-container">
-        <b-button v-on:click="preparePlay"> Play</b-button>
+    <section class="container">
+        <Controls />
+            <div v-if="currentTrack">
+                <span> Now playing: {{artistsDisplay}} {{currentTrack.name}} </span>
+            </div>
+
+            <span v-if="currentPlaylist">
+                <b-icon
+                    type="is-primary"
+                    icon="playlist-music-outline"
+                    size="medium"
+                ></b-icon>
+                {{ currentPlaylist.name }}
+            </span>
+        <b-slider v-model="progress"> </b-slider>
+      
     </section>
 </template>
 
@@ -21,16 +35,23 @@ export default {
         return {
             deviceId: null,
             player: {},
+            progress: 0,
             user: 'ramonavic',
-            currentTrack: null,
-            currentPlaylist: null,
+            progressInterval: null,
         }
     },
     computed: {
         ...mapGetters({
-            playlists: 'playlists/getPlaylists',
-            accessToken: 'user/getAccessToken',
+            playback: 'player/getPlayback',
+            currentTrack: 'player/getCurrentTrack',
+            currentPlaylist: 'player/getCurrentPlaylist',
         }),
+        artistsDisplay() {
+            const artists = this.currentTrack?.artists
+            if (artists) {
+                return artists.map((artist) => artist.name).join(',')
+            }
+        },
     },
 
     async beforeCreate() {
@@ -51,9 +72,35 @@ export default {
 
     methods: {
         preparePlay(playlistUri) {
-            console.log('clicked play', playlistUri)
-
             this.$store.dispatch('player/startPlaylist', playlistUri)
+        },
+
+        updateProgress() {
+            clearInterval(this.progressInterval)
+
+            // If update progress is called because of a Spotify event,
+            // reset the calculated position to this.
+            this.calculatedPosition = this.playback.position
+
+            this.progress = (this.playback.position / this.playback.duration) * 100
+
+            if (!this.playback.paused) {
+                // Add another second ourselves, since Spotify only sends this data
+                // when there are new events (such as play, pause).
+                this.progressInterval = setInterval(() => {
+                    if (this.playback && this.calculatedPosition + 1000 <= this.playback.duration) {
+                        this.calculatedPosition = this.calculatedPosition + 1000
+
+                        this.progress = (this.calculatedPosition / this.playback.duration) * 100
+                    }
+                }, 1000)
+            }
+        },
+    },
+
+    watch: {
+        playback() {
+            this.updateProgress()
         },
     },
 }

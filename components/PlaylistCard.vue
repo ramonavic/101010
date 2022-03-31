@@ -24,7 +24,7 @@
             </div>
         </div>
 
-        <b-button v-on:click="onClickPlay"> Play</b-button>
+        <b-button @click="onClickPlay"> Play</b-button>
 
         <!-- <iframe :src="embedLink" class="playlist" width="100%" height="250" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe> -->
         <footer class="card-footer">
@@ -121,7 +121,6 @@ export default {
             return `https://open.spotify.com/embed/playlist/${this.playlist.spotify_id}?utm_source=generator&theme=0`
         },
         backgroundImage() {
-            console.log('getting baxkground', this.playlist.image)
             return {
                 'background-image': `url(${this.playlist.image})`,
             }
@@ -131,13 +130,9 @@ export default {
         onClickPlay() {
             // Find the player component thats attached to default.vue
             const rootPage = this.$root.$children.find((child) => {
-                console.log('child', child)
-
                 // Look for property isRoot
                 return child.isRoot
             })
-
-            console.log(rootPage)
 
             const player = rootPage?.$refs?.player
 

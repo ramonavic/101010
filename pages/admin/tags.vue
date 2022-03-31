@@ -38,7 +38,7 @@
         {{ this.tagNames}}
         <br />
         <hr />
-        <b-button v-on:click="addTagsToPlaylist"> Add tags</b-button>
+        <b-button @click="addTagsToPlaylist"> Add tags</b-button>
         </form>
     </section>
 </template>
@@ -63,7 +63,7 @@ export default {
     data() {
         return {
             chosenTags: [],
-            chosenPlaylist: []
+            chosenPlaylist: [],
         }
     },
     computed: {
@@ -71,34 +71,32 @@ export default {
             tags: 'tags/getTags',
             tagNames: 'tags/getTagNames',
             playlistNames: 'playlists/getPlaylistNames',
-            playlists: 'playlists/getPlaylists'
+            playlists: 'playlists/getPlaylists',
         }),
         filteredTagNames: {
             get() {
-                return this.$store.getters["tags/getFilteredTagNames"]
+                return this.$store.getters['tags/getFilteredTagNames']
             },
             set(query) {
                 this.$store.commit('tags/SET_FILTERED_TAGS', query)
-            }
+            },
         },
 
-        // TODO it's better to filter in playlists instead of playlistNames so that we 
-        // dont have to find a playlist by name later. 
+        // TODO it's better to filter in playlists instead of playlistNames so that we
+        // dont have to find a playlist by name later.
         filteredPlaylists: {
             get() {
-                return this.$store.getters["playlists/getFilteredPlaylistNames"]
+                return this.$store.getters['playlists/getFilteredPlaylistNames']
             },
             set(query) {
                 this.$store.commit('playlists/SET_FILTERED_PLAYLISTS', query)
-            }
-        }
-
+            },
+        },
     },
     async beforeMount() {
-        this.updateData()        
+        this.updateData()
     },
     methods: {
-
         updateData() {
             this.$store.dispatch('tags/fetchTags')
             this.$store.dispatch('playlists/fetchPlaylists')
@@ -111,7 +109,7 @@ export default {
             console.log(tagsForPlaylist)
             const data = {
                 playlistId: this.getPlaylistIdForName(),
-                tagsForPlaylist
+                tagsForPlaylist,
             }
 
             this.$store.dispatch('tags/addTagsToPlaylist', data)
@@ -119,25 +117,19 @@ export default {
 
         getFilteredTags(text) {
             this.filteredTagNames = this.tagNames.filter((name) => {
-                return name
-                    .toString()
-                    .toLowerCase()
-                    .indexOf(text.toLowerCase()) >= 0
+                return name.toString().toLowerCase().indexOf(text.toLowerCase()) >= 0
             })
         },
 
-         getFilteredPlaylists(text) {
+        getFilteredPlaylists(text) {
             this.filteredPlaylists = this.playlistNames.filter((name) => {
-                return name
-                    .toString()
-                    .toLowerCase()
-                    .indexOf(text.toLowerCase()) >= 0
+                return name.toString().toLowerCase().indexOf(text.toLowerCase()) >= 0
             })
         },
 
         getPlaylistIdForName() {
             const playlist = this.playlists.find((playlist) => playlist.name === this.chosenPlaylist[0])
-            return playlist.id 
+            return playlist.id
         },
 
         prepareTagsForPlaylist() {
@@ -145,17 +137,15 @@ export default {
                 const existingTag = this.tags.find((tag) => tag.name === chosenTagName)
                 console.log('existing tag', existingTag)
                 if (!existingTag) {
-
                     console.log('chosen tag', chosenTagName)
                     return {
                         chosenTagName,
-                        isNew: true
+                        isNew: true,
                     }
                 }
                 return existingTag
             })
-        }
-        
-    }
+        },
+    },
 }
 </script>

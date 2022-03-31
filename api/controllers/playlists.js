@@ -27,6 +27,7 @@ export const index = async (req, res) => {
         tags.forEach((tag) => {
             if (tag.playlist_id === playlist.id) {
 
+                // Themes alwys go in the front
                 if (tag.is_theme) {
                     return playlist.tags.unshift(tag)
                 }

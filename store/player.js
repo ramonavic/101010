@@ -6,8 +6,10 @@ Vue.use(Vuex);
 export const state = () => ({
     player: null,
     playback: null,
-    currentPlaylist: null,
-    deviceId: null
+    currentPlaylist: null, // hold the playlist URI
+    deviceId: null,
+    currentTrack: null,
+    spotifyUser: 'ramonavic' // doesn't change for now
 })
 
 export const mutations = {
@@ -21,26 +23,69 @@ export const mutations = {
 
     REGISTER_PLAYER(state, payload) {
         state.player = payload
+    },
+
+    UPDATE_CURRENT_TRACK(state, payload) {
+        state.currentTrack = payload
+    },
+
+    SET_CURRENT_PLAYLIST(state, payload) {
+
+        // The database doesn't hold the uri, therefore 
+        // calculate it before adding it to the store. 
+        if (!payload.uri) {
+
+            if (payload.id) {
+                return state.currentPlaylist = {
+                    uri: `spotify:user:${state.spotifyUser}:playlist:${payload.spotify_id}`,
+                    name: payload.name
+
+                }
+            }
+        }
+
+        state.currentPlaylist = payload
     }
 }
 
 export const getters = {
     getAccessToken(state, getters, rootState, rootGetters) {
-        console.log('getting access from rootgetter', rootGetters["user/getAccessToken"], rootGetters)
         return rootGetters["user/getAccessToken"]
     },
 
     getDeviceId(state) {
         return state.deviceId
+    },
+
+    getCurrentTrack(state) {
+        return state.currentTrack
+    },
+
+    getCurrentPlaylist(state) {
+        return state.currentPlaylist
+    },
+
+    getPlayback(state) {
+        return state.playback
+    },
+
+    getIsPlaying(state) {
+        if (state.playback) {
+            return state.playback.paused === false
+        } else {
+
+            // If no playback, it's not playing.
+            return false
+        }
     }
 }
 
 export const actions = {
 
-    init({ getters, commit, dispatch }) {
+    init({ getters, commit, dispatch, rootGetters }) {
 
         const player = new window.Spotify.Player({
-            name: 'Web Playback SDK',
+            name: '101010 Spotify Player',
             getOAuthToken: (cb) => {
                 // TODO find way to re-add auth token when it's removed
                 console.log('doing check auth from spotify player', getters['getAccessToken'])
@@ -73,18 +118,79 @@ export const actions = {
                 offset: {
                     position: 0,
                 },
-            },
-
-            // TODO create axios config and add headers when we have the access token
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${getters["getAccessToken"]}`,
-                }
-            })
+            }
+        )
     },
 
-    addListeners({ commit }, player) {
+    togglePlay({ state, dispatch }, currentPlaylistUri) {
+
+        // If we already have a current track, resume or pause.
+        if (state.currentTrack) {
+            return state.player.togglePlay()
+        }
+
+        // Otherwise there should only be a playlist loaded. 
+        // This should always be the initial latest playlist
+        dispatch('startPlaylist', currentPlaylistUri)
+
+    },
+
+    nextTrack({ state }) {
+        state.player.nextTrack()
+    },
+
+    previousTrack({ state }) {
+        state.player.previousTrack()
+    },
+
+    updatePlayback({ commit, getters }, playbackState) {
+        const currentTrackData = playbackState?.track_window?.current_track
+
+        if (!currentTrackData) {
+            console.log('no currentTrackData in update playback. Music has stopped', playbackState)
+            return
+        }
+
+        // Check through getters if there is a current track and if it's different 
+        // from the current track data
+        if (currentTrackData?.id !== getters['getCurrentTrack']?.id) {
+            const { id, name, artists, uri } = currentTrackData
+
+            const currentTrack = {
+                id,
+                name,
+                artists,
+                uri
+            }
+
+            commit('UPDATE_CURRENT_TRACK', currentTrack)
+
+        }
+
+        if (playbackState.context.uri !== getters['getCurrentPlaylist']) {
+
+            commit(
+                'SET_CURRENT_PLAYLIST',
+                {
+                    uri: playbackState.context.uri,
+                    name: playbackState.context.metadata.context_description
+                }
+            )
+        }
+
+        const { duration, paused, loading, position, shuffle } = playbackState
+
+        commit('UPDATE_PLAYBACK', {
+            duration,
+            paused,
+            loading,
+            position,
+            shuffle
+        })
+
+    },
+
+    addListeners({ commit, dispatch }, player) {
         player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id)
 
@@ -100,7 +206,7 @@ export const actions = {
         player.addListener('player_state_changed', (state) => {
             console.log(state)
 
-            commit('UPDATE_PLAYBACK', state)
+            dispatch('updatePlayback', state)
         })
     },
 

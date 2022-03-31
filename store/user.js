@@ -15,6 +15,11 @@ export const mutations = {
 
     SET_ACCESS_TOKEN(state, payload) {
         state.accessToken = payload
+
+        this.$axios.defaults.headers.common = {
+            'Authorization': `Bearer ${payload}`,
+            'Content-Type': 'application/json'
+        }
         console.log(state)
     }
 }
