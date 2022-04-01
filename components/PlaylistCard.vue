@@ -1,8 +1,10 @@
 <template>
     <div class="container card">
         <div class="top">
-            <div class="card-image" :style="backgroundImage"></div>
             <div class="title over-image"> {{playlist.name}} </div>
+            <div class="card-image" :style="backgroundImage" v-bind:class="{'is-spinning': isPlaying}">
+                <div class="album-cover__center"></div>
+            </div>
             <div class="card-content">
                 <!-- {{playlist.description}} -->
 
@@ -23,50 +25,75 @@
                 </span> -->
             </div>
         </div>
-
-        <b-button @click="onClickPlay"> Play</b-button>
-
         <!-- <iframe :src="embedLink" class="playlist" width="100%" height="250" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe> -->
-        <footer class="card-footer">
+        <div class="card-footer">
 
             <!-- TODO hier moet een Spotify icoon komen -->
-            <a href="#" class="card-footer-item">Open in Spotify</a>
+            <a href="#" @click="onClickPlay" class="card-footer-item">Play</a>
+
+            <!-- <a href="#" class="card-footer-item">Open in Spotify</a> -->
             <!-- TODO hier moet een hartje icoon komen -->
             <a href="#" class="card-footer-item">Add Playlist</a>
-        </footer>
+        </div>
     </div>
+
 </template>
 
 <style scoped lang="scss">
 .card {
     margin: 0 2rem 2rem 0;
-    max-width: 400px !important;
+    max-width: 24.57rem !important;
     background-color: #0a0a0a;
     border: 1px solid $grey-dark;
     box-shadow: 18px 18px 22px 5px $black;
     display: inline-block;
 
-    .over-image {
-        position: absolute;
-        top: 2rem;
-        left: 2rem;
-        z-index: 2;
-    }
-
     .top {
         position: relative;
         margin: 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     .card-image {
         z-index: 1;
         margin-bottom: 1rem;
-        height: 15em;
-        width: 100%;
+        height: 20rem;
+        width: 20rem;
         background-repeat: no-repeat;
         background-position: top;
         background-size: cover;
         filter: blur(1px);
+        border-radius: 50%;
+
+        &.is-spinning {
+            animation-name: spin;
+            animation-duration: 5000ms;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .album-cover__center {
+            border-radius: 50%;
+            background: $background;
+            position: absolute;
+            z-index: 80;
+            top: 8.71rem;
+            left: 8.71rem;
+            width: 2rem;
+            height: 2rem;
+        }
     }
 
     .card-content {
@@ -105,6 +132,7 @@ export default {
     data() {
         return {
             spotifyUser: 'ramonavic',
+            isPlaying: false,
         }
     },
     props: {
@@ -138,6 +166,8 @@ export default {
 
             if (player) {
                 player.preparePlay(this.getPlaylistUri())
+
+                this.isPlaying = true
             } else {
                 // TODO throw through confirm
             }

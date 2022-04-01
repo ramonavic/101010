@@ -21,7 +21,7 @@
     flex-wrap: wrap;
     margin: 2rem;
     background-color: $background;
-    justify-content: flex-start;
+    gap: 2rem;
 
     @media screen and (max-width: 780px) {
         justify-content: center;
