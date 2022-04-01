@@ -1,20 +1,20 @@
 <template>
     <div class="page-container">
-        <section class="container playlists-container">
+        <div class="playlists-container">
             <PlaylistCard 
                 v-bind:key="playlist.id" 
                 v-for="playlist in playlists" 
                 :playlist="playlist"
                 :playlists-amount="playlist.length"
             />
-        </section>
+        </div>
     </div>
 </template>
 
 <style lang="scss">
 .page-container {
-    display: flex;
-    justify-content: center;
+    // display: flex;
+    // justify-content: center;
 }
 .playlists-container {
     display: flex;

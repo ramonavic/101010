@@ -1,29 +1,90 @@
 <template>
-    <section class="container">
-        <Controls />
-            <div v-if="currentTrack">
-                <span> Now playing: {{artistsDisplay}} {{currentTrack.name}} </span>
-            </div>
+    <div class="player-container">
+        <section class="player-container__inner"> 
 
-            <span v-if="currentPlaylist">
+            <section class="info"> 
+                <div v-if="currentTrack">
+                    <span> 
+                        <b-icon
+                            type="is-primary"
+                            icon="music-note-outline"
+                            size="is-small"
+                        ></b-icon>
+                       <!-- <marquee v-if="isSmallScreen" scrolldelay="250" class="info__text"> {{artistsDisplay}} - {{currentTrack.name}} </marquee> -->
+                       <span class="info__text"> {{artistsDisplay}} - {{currentTrack.name}} </span>
+                    </span>
+                </div>
+
+                <span v-if="currentPlaylist">
+                    <b-icon
+                        type="is-primary"
+                        icon="playlist-music-outline"
+                        size="is-small"
+                    ></b-icon>
+                    <span class="info__text"> {{ currentPlaylist.name }}</span>
+                </span>
+            </section>
+
+            <Controls />
+            <div class="volume"> 
                 <b-icon
                     type="is-primary"
-                    icon="playlist-music-outline"
-                    size="medium"
+                    :icon="getVolumeIcon"
+                    size="is-small"
                 ></b-icon>
-                {{ currentPlaylist.name }}
-            </span>
-        <b-slider v-model="progress"> </b-slider>
-      
-    </section>
+                <b-slider 
+                    class="volume__slider" 
+                    v-model="volume" 
+                    @change="changeVolume"
+                    size="is-small"
+                    :tooltip=false
+                > </b-slider>
+            </div>
+        </section>
+        <b-slider :tooltip=false v-model="progress" @change="changePosition" size="is-small"> </b-slider>
+    </div>
 </template>
 
 <style scoped lang="scss">
 .player-container {
-    position: sticky;
+    position: fixed;
     bottom: 0;
     width: 100vw;
     background: $background;
+    padding: 1rem 2rem;
+
+    &__inner {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .info {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+
+        &__text {
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 1rem;
+
+            // @media screen and (max-width: 500px) {
+            //     justify-content: center;
+            // }
+        }
+    }
+}
+
+.volume {
+    display: flex;
+    align-items: center;
+
+    &__slider {
+        margin-left: 5px;
+        width: 50px;
+    }
 }
 </style>
 
@@ -38,6 +99,8 @@ export default {
             progress: 0,
             user: 'ramonavic',
             progressInterval: null,
+            isSmallScreen: false,
+            volume: 75,
         }
     },
     computed: {
@@ -49,7 +112,20 @@ export default {
         artistsDisplay() {
             const artists = this.currentTrack?.artists
             if (artists) {
-                return artists.map((artist) => artist.name).join(',')
+                return artists.map((artist) => artist.name).join(', ')
+            }
+        },
+        getVolumeIcon() {
+            if (this.volume === 0) {
+                return 'volume-mute'
+            }
+
+            if (this.volume < 33) {
+                return 'volume-low'
+            }
+
+            if (this.volume > 33) {
+                return 'volume-high'
             }
         },
     },
@@ -96,6 +172,24 @@ export default {
                 }, 1000)
             }
         },
+
+        changePosition(relPosition) {
+            // if (relPosition !== this.)
+            console.log('changed position', relPosition)
+
+            const absPosition = (relPosition / 100) * this.playback.duration
+
+            this.$store.dispatch('player/changeTrackPosition', absPosition)
+        },
+
+        changeVolume(volume) {
+            this.$store.dispatch('player/changeVolume', volume / 100)
+        },
+
+        // onResize(event) {
+        //     // TODO make measurements more precise
+        //     this.isSmallScreen = event.target.innerWidth < 800
+        // },
     },
 
     watch: {
@@ -103,5 +197,14 @@ export default {
             this.updateProgress()
         },
     },
+
+    // created() {
+    //     window.addEventListener('resize', this.onResize)
+    //     window.dispatchEvent(new Event('resize'))
+    // },
+
+    // beforeDestroy() {
+    //     window.removeEventListener('resize', this.onResize, true)
+    // },
 }
 </script>

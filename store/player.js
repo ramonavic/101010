@@ -6,7 +6,7 @@ Vue.use(Vuex);
 export const state = () => ({
     player: null,
     playback: null,
-    currentPlaylist: null, // hold the playlist URI
+    currentPlaylist: null, // hold the playlist URI and name
     deviceId: null,
     currentTrack: null,
     spotifyUser: 'ramonavic' // doesn't change for now
@@ -141,6 +141,16 @@ export const actions = {
 
     previousTrack({ state }) {
         state.player.previousTrack()
+    },
+
+    changeTrackPosition({ state }, position) {
+        if (state.currentTrack) {
+            state.player.seek(position)
+        }
+    },
+
+    changeVolume({ state }, volume) {
+        state.player.setVolume(volume)
     },
 
     updatePlayback({ commit, getters }, playbackState) {

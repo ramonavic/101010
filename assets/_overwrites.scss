@@ -9,6 +9,7 @@
 
 html {
   background-color: $background;
+  font-size: 14px;
 }
 
 hr {
@@ -26,6 +27,18 @@ h6 {
 
 a {
   transition: all 200ms ease;
+}
+
+.icon {
+  &--clickable {
+    transition: all 200ms ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+
 }
 
 .button {
