@@ -1,8 +1,13 @@
 <template>
   <div class="hello">
-    <template v-if="this.user">
-      <h1> Music from the 🌍 curated with ❤️ </h1>
-      <h1>Hi there, {{ this.user.name }}</h1>
+    <section class="hero">
+      <div class="hero-body">
+        <h1 class="title"> 101010 </h1>
+        <h3 class="subtitle"> Music from the 🌍 curated with ❤️ </h3>
+      </div>
+    </section>
+    <section v-if="this.user"> 
+      <h3>Hi there, {{ this.user.name }}</h3>
       <div v-if="this.user.spotify_id">
         <!-- <img :src="this.user.image" alt="profile_picture" class="profile_pic"> -->
         <p>
@@ -13,7 +18,7 @@
         <p> You haven't connected your Spotify account yet. Do this in order to benefit of the full capabilities of the app</p>
         <p> <a href ="/api/users/connect_spotify"> Connect to Spotify </a></p>
       </section>
-    </template>
+    </section>
   </div>
 </template>
 
@@ -36,23 +41,13 @@
 </script>
 
 <style>
-/* h3 {
-    margin: 40px 0 0;
+h1 {
+    font-size: 6rem !important;
 }
 
-ul {
-    list-style-type: none;
-    padding: 0;
+h3 {
+    font-size: 3rem !important;
 }
-
-li {
-    display: inline-block;
-    margin: 0 10px;
-}
-
-a {
-    color: #42b983;
-} */
 
 .profile_pic {
     width: 100px;

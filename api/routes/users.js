@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import * as Users from '../controllers/users'
+import { spotifyAuthCheck } from '../authCheck'
 
 const router = Router()
 

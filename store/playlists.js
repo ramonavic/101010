@@ -25,15 +25,21 @@ export const mutations = {
 export const actions = {
 
     async fetchPlaylists({ commit }) {
-        const playlists = await this.$axios.get('/api/playlists/index')
-        console.log('fetched playlists', playlists.data)
-        commit('UPDATE_PLAYLISTS', playlists.data)
+        const response = await this.$axios.get('/api/playlists/index')
+        console.log('fetched playlists', response.data)
+        commit('UPDATE_PLAYLISTS', response.data.playlists)
+
+        // TODO Determine if this can better be done in a more generic place 
+        // f.e. when we update the access token through refresh token
+        await commit('user/SET_ACCESS_TOKEN', response.data.accessToken, { root: true })
+
+        commit('player/SET_CURRENT_PLAYLIST', response.data.playlists[0], { root: true })
     },
 
     // TODO make later
     async toggleSubscription({ commit }) {
         // await axios.post('/api/users/logout')
-        // commit('mutateUser', null)
+        // commit('MUTATE_USER', null)
     }
 }
 
@@ -51,5 +57,5 @@ export const getters = {
             return state.filteredPlaylistNames
         }
         return state.playlistNames
-    }
+    },
 }

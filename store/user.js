@@ -4,25 +4,41 @@ import Vue from 'vue';
 Vue.use(Vuex);
 
 export const state = () => ({
-    user: null
+    user: null,
+    accessToken: ''
 })
 
 export const mutations = {
-    mutateUser(state, payload) {
+    MUTATE_USER(state, payload) {
         state.user = payload;
+    },
+
+    SET_ACCESS_TOKEN(state, payload) {
+        state.accessToken = payload
+
+        this.$axios.defaults.headers.common = {
+            'Authorization': `Bearer ${payload}`,
+            'Content-Type': 'application/json'
+        }
+        console.log(state)
     }
 }
 
 export const actions = {
     async logout({ commit }) {
         await this.$axios.post('/api/users/logout')
-        commit('mutateUser', null)
+        commit('MUTATE_USER', null)
     }
 }
 
 export const getters = {
     getUser(state) {
         return state.user
+    },
+
+    getAccessToken(state) {
+        console.log('getting acess token from store', state.accessToken)
+        return state.accessToken
     },
 
     isNotLoggedIn(state) {

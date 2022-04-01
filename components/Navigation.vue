@@ -93,57 +93,56 @@ export default {
     data() {
         return {
             isRegisterModalActive: false,
-            isLoginModalActive: false
+            isLoginModalActive: false,
         }
     },
     computed: {
         ...mapGetters({
             user: 'user/getUser',
-            isNotLoggedIn: 'user/isNotLoggedIn'
-        })
+            isNotLoggedIn: 'user/isNotLoggedIn',
+        }),
     },
     async created() {
-        console.log('inside created', this.$route.query.login_jwt)
         let response
         const loginJwt = this.$route.query?.login_jwt
         if (loginJwt) {
-
             try {
-            response = await this.$axios.post('/api/users/jwt_login', {}, {
-                headers: {
-                    Authorization: `Bearer ${loginJwt}`
-                }
-            })
-            this.$router.replace({'query': null})
+                response = await this.$axios.post(
+                    '/api/users/jwt_login',
+                    {},
+                    {
+                        headers: {
+                            Authorization: `Bearer ${loginJwt}`,
+                        },
+                    }
+                )
+                this.$router.replace({ query: null })
             } catch (err) {
                 console.log(err)
                 if (err.message) {
                     window.alert(`${err.message} ${err.error}`)
                 }
             }
-            
         } else {
             response = await this.$axios.get('/api/users/check_auth')
         }
 
         if (response.data) {
-            console.log('commit user data to store')
-            this.$store.commit('user/mutateUser', response.data)
+            this.$store.commit('user/MUTATE_USER', response.data)
         }
-        console.log('current state of store', this.$store.state.user)
+        console.log('current state of user store', this.$store.state.user)
     },
     methods: {
         logOut() {
-            this.$store.dispatch('user/logout');
+            this.$store.dispatch('user/logout')
         },
         onCloseSubscribeModal() {
             this.isRegisterModalActive = false
         },
         onCloseLoginModal() {
             this.isLoginModalActive = false
-        }
-    }
-    
+        },
+    },
 }
 </script>
 

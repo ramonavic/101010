@@ -8,7 +8,7 @@ export default class Spotify {
         this.client_id = process.env.SPOTIFY_CLIENT_ID
         this.client_secret = process.env.SPOTIFY_CLIENT_SECRET
         this.redirect_uri = process.env.REDIRECT_URI
-        this.scope = 'user-read-email user-read-private playlist-modify-public'
+        this.scope = 'user-read-email user-read-private playlist-modify-public streaming'
     }
 
     prepareLoginDetails() {
@@ -26,13 +26,16 @@ export default class Spotify {
             throw `Invalid params supplied to get access token`
         }
 
+        // Create a state to help check for request forgery
+        this.state = this.generateRandomString(16)
 
         const params = {
             grant_type: 'authorization_code',
             client_id: this.client_id,
             client_secret: this.client_secret,
             code,
-            redirect_uri: this.redirect_uri
+            redirect_uri: this.redirect_uri,
+            state: this.state
         }
 
         try {
@@ -47,14 +50,17 @@ export default class Spotify {
             })
             const data = response.data
 
-            console.log('got access token', response.data)
-            if (data) {
+            // Check for request forgery
+            if (data && data.state === this.state) {
                 data.refresh_token && User.updateRefreshToken(userId, data.refresh_token)
 
                 return {
                     ...data,
                     status: 'succesfully refresh token'
                 }
+            } else {
+                console.log(data.state, this.state)
+                console.error('dont continue state is not the same')
             }
 
         } catch (err) {
@@ -67,10 +73,13 @@ export default class Spotify {
 
     async getAccessTokenFromRefreshToken(refresh_token, userId) {
 
+        this.state = this.generateRandomString(16)
+
         const params = {
             grant_type: 'refresh_token',
             client_id: this.client_id,
             client_secret: this.client_secret,
+            // state: this.state,
             refresh_token
         }
 
@@ -85,7 +94,9 @@ export default class Spotify {
                 }
             })
 
-            if (response.data) {
+            console.log('got data from accestoken', response.data)
+
+            if (response.data.access_token) {
 
                 // Spotify will sometimes return a new refresh token
                 const refreshToken = response.data.refresh_token
@@ -95,7 +106,7 @@ export default class Spotify {
 
                 return response.data
             } else {
-                console.log(response)
+                console.log('didnt receive token through refresn token')
                 return {
                     state: 'failed'
                 }
@@ -127,4 +138,14 @@ export default class Spotify {
             return user
         }
     }
+
+    generateRandomString(length) {
+        var text = '';
+        var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+        for (var i = 0; i < length; i++) {
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+        }
+        return text;
+    };
 }

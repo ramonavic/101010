@@ -5,6 +5,7 @@ export default class User {
         this.db = new DB()
     }
 
+    // TODO dont return stuff such as refresh token and maybe other stuff as well
     async findUser(email) {
         return await this.db.single('SELECT * FROM users WHERE email = ? LIMIT 1', [email])
     }
@@ -21,6 +22,11 @@ export default class User {
         return user
     }
 
+    /**
+     * Update the refresh token in the database for the user with the given id
+     * @param [id=null] - The id of the user you want to update.
+     * @param [token=null] - The token that will be used to generate access token
+     */
     async updateRefreshToken(id = null, token = null) {
         console.log('updating refresh token in mysql', id, token)
         if (!id) {

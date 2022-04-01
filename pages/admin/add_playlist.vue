@@ -52,17 +52,15 @@ export default {
     data() {
         return {
             name: null,
-            id: null, 
+            id: null,
             image: null,
-            description: null
+            description: null,
         }
     },
     methods: {
         async getPlaylistInfo() {
             const playlistId = this.id
-            console.log('getting playlist info for: ', this.id)
             const playlist = await this.$axios.get(`/api/admin/get_playlist/${playlistId}`)
-            console.log(playlist)
 
             if (playlist.data) {
                 this.name = playlist.data.name
@@ -80,11 +78,11 @@ export default {
                     image: this.image,
                     description: this.description,
                     spotify_id: this.id,
-                }
+                },
             })
 
             console.log(response)
-        }
-    }
+        },
+    },
 }
 </script>

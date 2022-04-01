@@ -1,5 +1,3 @@
-import axios from 'axios'
-import DB from '../db'
 import Mailer from '../mailer'
 import jwt from 'jsonwebtoken'
 import UserModel from '../Models/User'
@@ -14,8 +12,7 @@ const Spotify = new SpotifyModel()
 
 export const checkAuth = (req, res) => {
 
-    // TODO expand this further with modal that tells user to auth again when spotify auth is gone
-
+    // TODO can be deleted?
     console.log('inside check auth')
     if (req.signedCookies.user) {
         console.log('still authenticated')
@@ -37,24 +34,20 @@ export const connectSpotify = (req, res) => {
 }
 
 export const jwtLogin = async (req, res) => {
-    console.log('auth headers', req.headers)
+
     const auth = req.headers.authorization
     if (!auth || !auth.startsWith('Bearer ')) {
-        console.log('Bad auth request')
         return res.status(403).json({ status: 'error', message: `Bad auth request` })
     }
 
     const token = auth.substring(7, auth.length)
     let decoded
     try {
-        console.log('decoding token')
         decoded = jwt.verify(token, process.env.JWT_SECRET)
     } catch (err) {
         console.log(`Can't verify JWT`, err)
         return res.status(403).json({ status: 'error', message: `Can't verify JWT`, error: err })
     }
-
-    console.log('decoding succeeded')
 
     if (!decoded.hasOwnProperty('email') || !decoded.hasOwnProperty('expiration')) {
         return res.status(403).json({ status: 'error', message: `JWT token invalid` })
@@ -68,7 +61,7 @@ export const jwtLogin = async (req, res) => {
 
     // Verify JWT
     if (!user) {
-        return res.status(403).json({ status: 'error', message: `User doesn't exist` })
+        return res.status(404).json({ status: 'error', message: `User doesn't exist` })
     }
     const expired = expiration > new Date()
     if (expired) {
@@ -122,7 +115,7 @@ export const spotifyCallback = async (req, res) => {
         }
 
         user.spotify_id = spotifyUser.id
-        user.image = image
+        // user.image = image
 
         setUserCookie(res, user)
         setAccessTokenCookie(res, data)
