@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import * as Playlists from '../controllers/playlists'
-import { spotifyAuthCheck } from '../authCheck'
+import { spotifyAuthCheck } from '../auth/spotify'
 
 const router = Router()
 

@@ -131,7 +131,15 @@ export default {
     },
 
     async beforeCreate() {
-        await this.$store.dispatch('playlists/fetchPlaylists')
+        try {
+            await this.$store.dispatch('playlists/fetchPlaylists')
+        } catch (err) {
+            console.log(err)
+
+            if (err.message === 'not authorized in Spotify') {
+                // TODO dont render player. So this fetch must be done at a higher level
+            }
+        }
     },
 
     mounted() {
@@ -174,9 +182,6 @@ export default {
         },
 
         changePosition(relPosition) {
-            // if (relPosition !== this.)
-            console.log('changed position', relPosition)
-
             const absPosition = (relPosition / 100) * this.playback.duration
 
             this.$store.dispatch('player/changeTrackPosition', absPosition)

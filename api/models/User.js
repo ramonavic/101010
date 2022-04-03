@@ -5,21 +5,60 @@ export default class User {
         this.db = new DB()
     }
 
-    // TODO dont return stuff such as refresh token and maybe other stuff as well
+    /**
+     * Find a user by email address
+     * @param email - The email of the user to find.
+     * @returns A user object
+     */
     async findUser(email) {
-        return await this.db.single('SELECT * FROM users WHERE email = ? LIMIT 1', [email])
+        const user = await this.db.single(
+            `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
+                FROM users 
+            WHERE email = ? 
+                AND deleted_at IS NULL 
+            LIMIT 1`,
+            [email]
+        )
+
+        console.log('db user', user)
+
+        return user
     }
 
+    /**
+     * Find a user by id, but only if they are not deleted
+     * @param id - The id of the user to find.
+     * @returns The user object
+     */
+    async findUserById(id) {
+        return await this.db.single(
+            `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
+                FROM users 
+            WHERE id = ? 
+                AND deleted_at IS NULL 
+            LIMIT 1`,
+            [id]
+        )
+    }
+
+    /**
+     * It inserts a new user into the database.
+     * @param name - The name of the user.
+     * @param email - The email of the user.
+     * @param subscribeToMail - a boolean value that indicates whether the user wants to receive emails
+     * or not.
+     * @returns The query result.
+     */
     async registerUserThroughEmail(name, email, subscribeToMail) {
-        const user = await this.db.query(
-            `INSERT INTO users (name, email, mail_subscription) VALUES (?, ?, ?)`,
+        const result = await this.db.query(
+            `INSERT INTO results (name, email, mail_subscription) VALUES (?, ?, ?)`,
             [name, email, subscribeToMail]
         )
 
-        if (!user.insertId) {
+        if (!result.insertId) {
             throw 'Could not insert user in DB'
         }
-        return user
+        return result
     }
 
     /**
@@ -45,6 +84,11 @@ export default class User {
         }
     }
 
+    /**
+     * Get the refresh token for a user
+     * @param [id=null] - The id of the user.
+     * @returns The refresh token.
+     */
     async getRefreshToken(id = null) {
         if (!id) {
             throw `No user id passed while getting refresh token`
@@ -54,6 +98,13 @@ export default class User {
         return result.refresh_token
     }
 
+    /**
+     * This function updates the user's spotify id and image in the database
+     * @param userId - The id of the user that we want to update.
+     * @param spotifyId - The spotify id of the user.
+     * @param image - The image URL of the user's profile.
+     * @returns A boolean value.
+     */
     async updateWithSpotifyInfo(userId, spotifyId, image) {
 
         const update = this.db.query(

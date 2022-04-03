@@ -102,7 +102,7 @@ export default {
             isNotLoggedIn: 'user/isNotLoggedIn',
         }),
     },
-    async created() {
+    async mounted() {
         let response
         const loginJwt = this.$route.query?.login_jwt
         if (loginJwt) {
@@ -120,7 +120,7 @@ export default {
             } catch (err) {
                 console.log(err)
                 if (err.message) {
-                    window.alert(`${err.message} ${err.error}`)
+                    // window.alert(`${err.message} ${err.error}`)
                 }
             }
         } else {

@@ -1,7 +1,16 @@
 version: '3.3'
 
 services:
-  db:
+  redis: 
+    image: redis:alpine
+    container_name: redis 
+    command: ["--requirepass", "ladidadi"]
+    ports: 
+    - "6379:6379" 
+    expose: 
+    - "6379"
+  mysql:
+    container_name: mysql
     image: mysql:8
     environment:
       MYSQL_DATABASE: 'db'
@@ -16,4 +25,3 @@ services:
       - my-db:/var/lib/mysql
 volumes:
   my-db:
-
