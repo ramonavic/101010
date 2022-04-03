@@ -10,13 +10,9 @@ export const setupLoginStrategies = () => {
     passport.use('magicLink', new CustomStrategy(
         async function (req, callback) {
 
-            console.log('inside passport')
-
             const auth = req.headers.authorization
             if (!auth || !auth.startsWith('Bearer ')) {
                 return callback({ status: 'error', message: `Bad auth request` }, null)
-
-                // return res.status(403).json({ status: 'error', message: `Bad auth request` })
             }
 
             const token = auth.substring(7, auth.length)
@@ -25,16 +21,11 @@ export const setupLoginStrategies = () => {
             try {
                 decoded = jwt.verify(token, process.env.JWT_SECRET)
             } catch (err) {
-                console.log(`Can't verify JWT`, err)
-
                 return callback({ status: 'error', message: `Can't verify JWT` }, null)
-                // return res.status(403).json({ status: 'error', message: `Can't verify JWT`, error: err })
             }
 
             if (!decoded.hasOwnProperty('email') || !decoded.hasOwnProperty('expiration')) {
                 return callback({ status: 'error', message: `JWT token invalid` }, null)
-
-                // return res.status(403).json({ status: 'error', message: `JWT token invalid` })
             }
 
             const { email, expiration } = decoded
@@ -44,18 +35,10 @@ export const setupLoginStrategies = () => {
             // Verify JWT
             if (!user) {
                 return callback({ status: 'error', message: `User doesn't exist` }, null)
-
-
-                // return res.status(404).json({ status: 'error', message: `User doesn't exist` })
-
-                // TODO might have to use callback
             }
             const expired = expiration > new Date()
             if (expired) {
                 return callback({ status: 'error', message: `Token expired` }, null)
-
-
-                // return res.status(404).json({ status: 'error', message: `Token expired` })
             }
 
             // User succesfully verified

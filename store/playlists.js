@@ -26,7 +26,7 @@ export const actions = {
 
     async fetchPlaylists({ commit }) {
         const response = await this.$axios.get('/api/playlists/index')
-        console.log('fetched playlists', response.data)
+        console.log('fetched playlists')
         commit('UPDATE_PLAYLISTS', response.data.playlists)
 
         // TODO Determine if this can better be done in a more generic place 

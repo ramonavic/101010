@@ -182,9 +182,6 @@ export default {
         },
 
         changePosition(relPosition) {
-            // if (relPosition !== this.)
-            console.log('changed position', relPosition)
-
             const absPosition = (relPosition / 100) * this.playback.duration
 
             this.$store.dispatch('player/changeTrackPosition', absPosition)

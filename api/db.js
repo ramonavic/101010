@@ -1,7 +1,5 @@
 import mysql from 'mysql2'
 
-// TODO make sure that all files use same connection pool
-
 const credentials = {
     host: process.env.MYSQL_HOST,
     database: process.env.MYSQL_DATABASE,

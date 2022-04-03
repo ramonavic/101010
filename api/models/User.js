@@ -11,14 +11,18 @@ export default class User {
      * @returns A user object
      */
     async findUser(email) {
-        return await this.db.single(
-            `SELECT id, name, spotify_id, image, mail_subscription, is_admin 
+        const user = await this.db.single(
+            `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
                 FROM users 
             WHERE email = ? 
-                AND deleted_at IS NOT NULL 
+                AND deleted_at IS NULL 
             LIMIT 1`,
             [email]
         )
+
+        console.log('db user', user)
+
+        return user
     }
 
     /**
@@ -28,10 +32,10 @@ export default class User {
      */
     async findUserById(id) {
         return await this.db.single(
-            `SELECT id, name, spotify_id, image, mail_subscription, is_admin 
+            `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
                 FROM users 
             WHERE id = ? 
-                AND deleted_at IS NOT NULL 
+                AND deleted_at IS NULL 
             LIMIT 1`,
             [id]
         )
