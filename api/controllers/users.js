@@ -1,26 +1,11 @@
 import Mailer from '../mailer'
-import jwt from 'jsonwebtoken'
-import UserModel from '../Models/User'
-import SpotifyModel from '../Models/Spotify'
+import UserModel from '../models/User'
+import SpotifyModel from '../models/Spotify'
+import jwt from 'jwt'
 
-
-// TODO create AuthModel
 const mailer = new Mailer()
 const User = new UserModel()
 const Spotify = new SpotifyModel()
-
-
-export const checkAuth = (req, res) => {
-
-    // TODO can be deleted?
-    console.log('inside check auth')
-    if (req.signedCookies.user) {
-        console.log('still authenticated')
-        res.json(req.signedCookies.user)
-    } else {
-        res.end()
-    }
-}
 
 export const connectSpotify = (req, res) => {
 
@@ -33,41 +18,11 @@ export const connectSpotify = (req, res) => {
     res.send()
 }
 
-export const jwtLogin = async (req, res) => {
+export const authCallback = async (req, res) => {
 
-    const auth = req.headers.authorization
-    if (!auth || !auth.startsWith('Bearer ')) {
-        return res.status(403).json({ status: 'error', message: `Bad auth request` })
-    }
+    const user = req.user
 
-    const token = auth.substring(7, auth.length)
-    let decoded
-    try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET)
-    } catch (err) {
-        console.log(`Can't verify JWT`, err)
-        return res.status(403).json({ status: 'error', message: `Can't verify JWT`, error: err })
-    }
-
-    if (!decoded.hasOwnProperty('email') || !decoded.hasOwnProperty('expiration')) {
-        return res.status(403).json({ status: 'error', message: `JWT token invalid` })
-    }
-
-    const { email, expiration } = decoded
-
-    const user = await User.findUser(email)
-
-    console.log('user found', user)
-
-    // Verify JWT
-    if (!user) {
-        return res.status(404).json({ status: 'error', message: `User doesn't exist` })
-    }
-    const expired = expiration > new Date()
-    if (expired) {
-        return res.status(403).json({ status: 'error', message: `Token expired` })
-    }
-
+    // TODO Improve user cookie to act more as remember token
     setUserCookie(res, user)
 
 
@@ -179,6 +134,9 @@ export const register = async (req, res) => {
     } else {
 
         try {
+
+            // TODO this is not the right way. Better is to send email first with all necessary 
+            // info in the JWT. Then make a new account on the fly based on info. But for now not important enough. 
             await User.registerUserThroughEmail(name, email, subscribeToMail)
         } catch (err) {
             console.log(err)

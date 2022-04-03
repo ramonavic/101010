@@ -1,6 +1,6 @@
-import { setAccessTokenCookie } from './controllers/users'
-import SpotifyModel from './models/Spotify'
-import UserModel from './models/User'
+import { setAccessTokenCookie } from '../controllers/users'
+import SpotifyModel from '../models/Spotify'
+import UserModel from '../models/User'
 
 const Spotify = new SpotifyModel()
 const User = new UserModel()
@@ -32,7 +32,7 @@ export const spotifyAuthCheck = async (req, res, next) => {
         console.log('No cookies to continue')
 
         // TODO add this to overall error handler in Vue
-        res.status(403).json({ status: 'error', message: 'not authorized in Spotify' })
+        return res.status(403).json({ status: 'error', message: 'not authorized in Spotify' })
     }
 
     next()

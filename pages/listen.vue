@@ -38,9 +38,5 @@ export default {
             playlists: 'playlists/getPlaylists',
         }),
     },
-
-    async created() {
-        await this.$store.dispatch('playlists/fetchPlaylists')
-    },
 }
 </script>

@@ -1,7 +1,21 @@
 version: '3.3'
 
 services:
-  db:
+  redis: 
+    image: redis:alpine
+    container_name: redis 
+    command: ["redis-server", "--bind", "redis", "--port", "6379", "--requirepass", "ladidadi"]
+    ports: 
+    - "6379:6379" 
+    expose: 
+    - "6379"
+    # volumes: 
+      # - $PWD/redis-data:/var/lib/redis
+      # - $PWD/redis.conf:/usr/local/etc/redis/redis.conf 
+    # networks: 
+    #   - mynetwork
+  mysql:
+    container_name: mysql
     image: mysql:8
     environment:
       MYSQL_DATABASE: 'db'
@@ -14,6 +28,11 @@ services:
       - '3306'
     volumes:
       - my-db:/var/lib/mysql
+    # networks: 
+    #   - mynetwork
 volumes:
   my-db:
 
+# networks:
+#   mynetwork:
+#     driver: bridge

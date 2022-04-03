@@ -8,6 +8,21 @@ export const state = () => ({
     accessToken: ''
 })
 
+export const getters = {
+    getUser(state) {
+        return state.user
+    },
+
+    getAccessToken(state) {
+        console.log('getting acess token from store', state.accessToken)
+        return state.accessToken
+    },
+
+    isNotLoggedIn(state) {
+        return state.user === null
+    }
+}
+
 export const mutations = {
     MUTATE_USER(state, payload) {
         state.user = payload;
@@ -28,20 +43,5 @@ export const actions = {
     async logout({ commit }) {
         await this.$axios.post('/api/users/logout')
         commit('MUTATE_USER', null)
-    }
-}
-
-export const getters = {
-    getUser(state) {
-        return state.user
-    },
-
-    getAccessToken(state) {
-        console.log('getting acess token from store', state.accessToken)
-        return state.accessToken
-    },
-
-    isNotLoggedIn(state) {
-        return state.user === null
     }
 }

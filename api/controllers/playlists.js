@@ -1,4 +1,3 @@
-import axios from 'axios'
 import db from '../db'
 import PlaylistModel from '../models/Playlist'
 import TagModel from '../models/Tag'
