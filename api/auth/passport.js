@@ -36,7 +36,10 @@ export const setupLoginStrategies = () => {
             if (!user) {
                 return callback({ status: 'error', message: `User doesn't exist` }, null)
             }
-            const expired = expiration > new Date()
+
+            const expired = new Date(expiration) < new Date()
+
+            console.log('checking expired', new Date(expiration), new Date(), expired)
             if (expired) {
                 return callback({ status: 'error', message: `Token expired` }, null)
             }
@@ -60,23 +63,25 @@ export const setupLoginStrategies = () => {
             const userCookie = req.signedCookies.user
 
             console.log('trying to auth with usercookie', userCookie)
-            if (userCookie) {
+            if (userCookie && userCookie.id) {
                 const user = await User.findUserById(userCookie.id)
 
                 return callback(null, user)
+            } else {
+                throw `Authenticating with user cookie failed`
             }
         }
     ))
 
 
     passport.serializeUser(function (user, done) {
-        console.log('serializing user')
+        console.log(`serializing user ${user.id}`)
 
         done(null, user);
     });
 
     passport.deserializeUser(function (user, done) {
-        console.log('desiarlized user')
+        console.log(`desiarlized user ${user.id}`)
         done(null, user);
     });
 

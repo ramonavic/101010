@@ -80,10 +80,18 @@ export const spotifyCallback = async (req, res) => {
 
 export const logout = async (req, res) => {
     console.log('inside logout')
-    res
-        .clearCookie('user')
-        .clearCookie('access_token')
-        .redirect('/')
+
+    req.session.destroy((err) => {
+        if (err) {
+            console.log('Problem while destroying session', err)
+        }
+
+        res
+            .clearCookie('user')
+            .clearCookie('access_token')
+            .redirect('/')
+    })
+
 }
 
 export const setAccessTokenCookie = async (res, { access_token, expires_in }) => {
@@ -102,7 +110,7 @@ export const setAccessTokenCookie = async (res, { access_token, expires_in }) =>
 }
 
 export const setUserCookie = (res, user) => {
-    if (!user) {
+    if (!user?.id) {
         console.log(user)
         throw `Failed setting user cookie`
     }
