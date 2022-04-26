@@ -41,6 +41,10 @@ a {
 
 }
 
+.b-sidebar .sidebar-content.is-dark {
+  background-color: $background;
+}
+
 .button {
   transition: all 200ms ease;
   border-width: $border-width;

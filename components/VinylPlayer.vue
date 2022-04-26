@@ -1,5 +1,5 @@
 <template>
-    <div class="container card">
+    <div v-if="playlist" class="container card">
         <div class="top">
             <div class="title over-image"> {{playlist.name}} </div>
             <div class="card-image" :style="backgroundImage" v-bind:class="{'is-spinning': isPlaying}">
@@ -128,18 +128,14 @@
 </style>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
     data() {
         return {
             spotifyUser: 'ramonavic',
             isPlaying: false,
         }
-    },
-    props: {
-        playlist: {
-            type: Object,
-        },
-        playlistLength: Number,
     },
     computed: {
         createdDate() {
@@ -149,10 +145,14 @@ export default {
             return `https://open.spotify.com/embed/playlist/${this.playlist.spotify_id}?utm_source=generator&theme=0`
         },
         backgroundImage() {
+            console.log(this.playlist)
             return {
                 'background-image': `url(${this.playlist.image})`,
             }
         },
+        ...mapGetters({
+            playlist: 'player/getCurrentPlaylist',
+        }),
     },
     methods: {
         onClickPlay() {

@@ -6,7 +6,8 @@ Vue.use(Vuex);
 export const state = () => ({
     playlists: [],
     playlistNames: [],
-    filteredPlaylistNames: []
+    filteredPlaylistNames: [],
+    preview: []
 })
 
 export const mutations = {
@@ -16,6 +17,15 @@ export const mutations = {
 
     SET_FILTERED_PLAYLISTS(state, payload) {
         state.filteredPlaylistNames = payload
+    },
+
+    SET_PREVIEW(state, payload) {
+
+        // Helps with performance because this is done onHover
+        if (state.preview.id != payload.id) {
+            state.preview = payload
+        }
+
     }
     // toggleSubscription(state, payload) {
     //     // state.user = payload;
@@ -34,6 +44,8 @@ export const actions = {
         await commit('user/SET_ACCESS_TOKEN', response.data.accessToken, { root: true })
 
         commit('player/SET_CURRENT_PLAYLIST', response.data.playlists[0], { root: true })
+
+        commit('SET_PREVIEW', response.data.playlists[0])
     },
 
     // TODO make later
@@ -58,4 +70,8 @@ export const getters = {
         }
         return state.playlistNames
     },
+
+    getPreview(state) {
+        return state.preview
+    }
 }

@@ -1,42 +1,55 @@
 <template>
     <div class="page-container">
-        <div class="playlists-container">
-            <PlaylistCard 
-                v-bind:key="playlist.id" 
-                v-for="playlist in playlists" 
-                :playlist="playlist"
-                :playlists-amount="playlist.length"
-            />
+        <div class="browser" v-if="isBrowsing">
+            <Sidebar :playlists="playlists" @preview="preview" /> 
+            <Preview />
+        </div>
+
+        <div v-else class="vinyl">
+            <VinylPlayer />
         </div>
     </div>
 </template>
 
 <style lang="scss">
 .page-container {
-    // display: flex;
-    // justify-content: center;
-}
-.playlists-container {
     display: flex;
-    flex-wrap: wrap;
-    margin: 2rem;
     background-color: $background;
-    gap: 2rem;
 
     @media screen and (max-width: 780px) {
         justify-content: center;
     }
 }
+// .playlists-container {
+//     display: flex;
+//     margin: 2rem;
+//     gap: 2rem;
+
+// }
 </style>
 
 <script>
 import { mapGetters } from 'vuex'
 
 export default {
+    data() {
+        return {
+            isBrowsing: true,
+        }
+    },
     computed: {
         ...mapGetters({
             playlists: 'playlists/getPlaylists',
         }),
+    },
+    methods: {
+        preview(id) {
+            console.log('event emitted. preview: ', id)
+
+            const playlist = this.playlists.find((playlist) => playlist.id === id)
+
+            this.$store.commit('playlists/SET_PREVIEW', playlist)
+        },
     },
 }
 </script>

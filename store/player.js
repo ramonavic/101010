@@ -38,8 +38,7 @@ export const mutations = {
             if (payload.id) {
                 return state.currentPlaylist = {
                     uri: `spotify:user:${state.spotifyUser}:playlist:${payload.spotify_id}`,
-                    name: payload.name
-
+                    ...payload
                 }
             }
         }

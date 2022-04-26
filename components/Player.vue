@@ -130,7 +130,7 @@ export default {
         },
     },
 
-    async beforeCreate() {
+    async mounted() {
         try {
             await this.$store.dispatch('playlists/fetchPlaylists')
         } catch (err) {
@@ -140,9 +140,7 @@ export default {
                 // TODO dont render player. So this fetch must be done at a higher level
             }
         }
-    },
 
-    mounted() {
         const script = document.createElement('script')
         script.src = 'https://sdk.scdn.co/spotify-player.js'
         script.async = true
