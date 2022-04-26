@@ -33,10 +33,38 @@ export default class Playlist {
     }
 
     async add(params = {}) {
+        const tracks = params.tracks
+        delete params.tracks
+
         const addedPlaylist = await this.db.query(
             `INSERT INTO playlists (name, image, description, spotify_id) VALUES (?, ?, ?, ?)`,
             Object.values(params)
         )
+
+        if (addedPlaylist.insertId) {
+
+            let addTracksToPlaylistQuery = `
+                INSERT INTO playlist_tracks 
+                    (playlist_id, sequence, title, artists, duration_ms) 
+                VALUES `
+            tracks.forEach(({ sequence, title, artists, duration_ms }, index) => {
+
+                if (index + 1 === tracks.length) {
+
+                    addTracksToPlaylistQuery = addTracksToPlaylistQuery.concat(
+                        `(${addedPlaylist.insertId}, ${sequence}, "${title}", "${artists}", ${duration_ms}); `
+                    )
+                    return
+                }
+
+                addTracksToPlaylistQuery = addTracksToPlaylistQuery.concat(
+                    `(${addedPlaylist.insertId}, ${sequence}, "${title}", "${artists}", ${duration_ms}), `
+                )
+
+            })
+
+            await this.db.query(addTracksToPlaylistQuery)
+        }
 
         return addedPlaylist.insertId
     }

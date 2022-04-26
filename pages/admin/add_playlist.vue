@@ -9,6 +9,7 @@
                     Name: {{ name }} <br />
                     Description:  {{ description }} <br />
                     Image url:  {{ image }} 
+                    Amount of tracks: {{ this.tracks.length }}
                 </p>
             </div>
         </form>
@@ -55,18 +56,33 @@ export default {
             id: null,
             image: null,
             description: null,
+            tracks: [],
         }
     },
     methods: {
         async getPlaylistInfo() {
             const playlistId = this.id
-            const playlist = await this.$axios.get(`/api/admin/get_playlist/${playlistId}`)
+            const response = await this.$axios.get(`/api/admin/get_playlist/${playlistId}`)
 
-            if (playlist.data) {
-                this.name = playlist.data.name
+            if (response.data) {
+                this.name = response.data.name
                 this.id = playlistId
-                this.image = playlist.data.images[0].url
-                this.description = playlist.data.description
+                this.image = response.data.images[0].url
+                this.description = response.data.description
+
+                console.log(response.data)
+                const tracks = response.data.tracks.items.map((item, index) => {
+                    return {
+                        sequence: index + 1,
+                        title: item.track.name,
+                        artists: item.track.artists.map((artist) => artist.name).join(', '),
+                        duration_ms: item.track.duration_ms,
+                    }
+                })
+
+                this.tracks = tracks
+
+                console.log(this.tracks)
             }
         },
 
@@ -78,6 +94,7 @@ export default {
                     image: this.image,
                     description: this.description,
                     spotify_id: this.id,
+                    tracks: this.tracks,
                 },
             })
 

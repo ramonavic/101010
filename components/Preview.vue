@@ -45,7 +45,7 @@
 <style scoped lang="scss">
 section {
     display: flex;
-    gap: 5rem;
+    gap: 5rem; // TODO moet mobile beter worden
 }
 
 .card {
