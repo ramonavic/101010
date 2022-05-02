@@ -27,17 +27,12 @@ export const index = async (req, res) => {
 
         playlists[index].tracks = tracks.filter((track) => track.playlist_id === playlist.id)
 
+        // Add tags to playlists and sort is_theme tags first (boolean sort)
         playlists[index].tags = tags.filter((tag) => {
             if (tag.playlist_id === playlist.id) {
-
-                // TODO make sure is_theme is sorted as first
-                // if (tag.is_theme) {
-                //     return playlist.tags.unshift(tag)
-                // }
-
                 return tag
             }
-        })
+        }).sort((a, b) => a.is_theme - b.is_theme).reverse()
     })
 
     if (!playlists.length) {

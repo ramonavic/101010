@@ -37,17 +37,10 @@ export const addPlaylist = async (req, res) => {
 
     console.log('params to be added', params)
 
-    const exists = await Playlist.checkIfExists(params.spotify_id)
+    const playlistId = await Playlist.add(params)
 
-    if (exists) {
-        res.status(400).json({ status: 'error', type: 'Playlist exists' })
-    } else {
-
-        const playlistId = await Playlist.add(params)
-
-        console.log('Successfully added playlist: ', playlistId)
-        res.json({ status: 'success', playlistId })
-    }
+    console.log('Successfully added playlist: ', playlistId)
+    res.json({ status: 'success', playlistId })
 }
 
 export const getTags = async (req, res) => {

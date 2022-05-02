@@ -32,41 +32,55 @@ export default class Playlist {
         return !!Object.values(playlistExists)[0]
     }
 
+    async getIdBySpotifyId(spotifyId) {
+        const result = this.db.single(`SELECT id FROM playlists WHERE spotify_id = ?`, [spotifyId])
+        console.log(result)
+        return result.id
+    }
+
     async add(params = {}) {
         const tracks = params.tracks
         delete params.tracks
 
+        // When the playlist already exists through the spotify_id, we only update the tracks
         const addedPlaylist = await this.db.query(
-            `INSERT INTO playlists (name, image, description, spotify_id) VALUES (?, ?, ?, ?)`,
+            `INSERT IGNORE INTO playlists (name, image, description, spotify_id) VALUES (?, ?, ?, ?)`,
             Object.values(params)
         )
 
-        if (addedPlaylist.insertId) {
+        console.log(addedPlaylist)
 
-            let addTracksToPlaylistQuery = `
+        let playlistId = addedPlaylist.insertId
+
+        if (!playlistId) {
+            playlistId = await this.getIdBySpotifyId(params.spotify_id)
+        }
+
+        console.log(playlistId)
+
+        let addTracksToPlaylistQuery = `
                 INSERT INTO playlist_tracks 
                     (playlist_id, sequence, title, artists, duration_ms) 
                 VALUES `
-            tracks.forEach(({ sequence, title, artists, duration_ms }, index) => {
+        tracks.forEach(({ sequence, title, artists, duration_ms }, index) => {
 
-                if (index + 1 === tracks.length) {
-
-                    addTracksToPlaylistQuery = addTracksToPlaylistQuery.concat(
-                        `(${addedPlaylist.insertId}, ${sequence}, "${title}", "${artists}", ${duration_ms}); `
-                    )
-                    return
-                }
+            if (index + 1 === tracks.length) {
 
                 addTracksToPlaylistQuery = addTracksToPlaylistQuery.concat(
-                    `(${addedPlaylist.insertId}, ${sequence}, "${title}", "${artists}", ${duration_ms}), `
+                    `(${playlistId}, ${sequence}, "${title}", "${artists}", ${duration_ms}); `
                 )
+                return
+            }
 
-            })
+            addTracksToPlaylistQuery = addTracksToPlaylistQuery.concat(
+                `(${playlistId}, ${sequence}, "${title}", "${artists}", ${duration_ms}), `
+            )
 
-            await this.db.query(addTracksToPlaylistQuery)
-        }
+        })
 
-        return addedPlaylist.insertId
+        await this.db.query(addTracksToPlaylistQuery)
+
+        return playlistId
     }
 
     async addTags(playlistId = 0, tagIds = []) {

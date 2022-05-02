@@ -27,42 +27,37 @@
                         <a class="button is-primary" @click="isRegisterModalActive = true">
                             Sign up
                         </a>
-                        <b-modal 
+                        <b-sidebar 
                             v-model="isRegisterModalActive" 
                             v-on:close-subscribe-modal="onCloseSubscribeModal"
-                            width:="700px"
+                            :fullwidth=true
+                            :fullheight=true
+                            :right=true
                         >
                             <RegisterModal
-                                has-modal-card
-                                trap-focus
-                                aria-role="dialog"
                                 aria-label="Subscribe to 101010"
-                                close-button-aria-label="Close"
-                                aria-modal
                             />
-                        </b-modal>
+                        </b-sidebar>
                         <a class="button is-light" @click="isLoginModalActive = true">
                             Login
                         </a>
-                        <b-modal 
+                        <b-sidebar 
                             v-model="isLoginModalActive" 
                             width="700px" 
                             v-on:close-login-modal="onCloseLoginModal"
+                            :fullwidth=true
+                            :fullheight=true
+                            :right=true
                         >
 
                             <LoginModal
-                                has-modal-card
-                                trap-focus
-                                aria-role="dialog"
                                 aria-label="Subscribe to 101010"
-                                close-button-aria-label="Close"
-                                aria-modal
                             />
-                        </b-modal>
+                        </b-sidebar>
                       
-                           <a href="/api/users/connect_spotify" class="button is-primary">
-                            <strong>Connect Spotify</strong>
-                        </a>
+                            <a href="/api/users/connect_spotify" class="button is-primary">
+                                <strong>Connect Spotify</strong>
+                            </a>
                     </div>
                     <div v-else>
                         <a v-on:click=logOut() class="button is-light"> 
@@ -78,11 +73,18 @@
     </b-navbar>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .nav {
     box-shadow: unset;
     border-bottom: 1px solid $grey-dark;
     border-radius: 0px;
+}
+
+.b-sidebar {
+    .is-fullheight {
+        justify-content: center;
+        margin-top: -4rem; // Minus height of player
+    }
 }
 </style>
 
