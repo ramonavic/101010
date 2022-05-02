@@ -78,6 +78,11 @@ export default class Playlist {
                 `REPLACE INTO playlists_tags (playlist_id, tag_id) VALUES (${playlistId}, ${tagId}); `
             )
         })
+        console.log(addTagsToPlaylistQuery)
         return await this.db.query(addTagsToPlaylistQuery)
+    }
+
+    async getAllTracks() {
+        return this.db.query(`SELECT * FROM playlist_tracks`)
     }
 }

@@ -15,28 +15,26 @@
                 <div class="tags-container">
 
                     <b-taglist>
-                            <template v-for="tag in playlist.tags">
-                                <b-tag v-if="tag.is_theme" :key="tag.id" type="is-primary">
-                                    {{tag.name}}
-                                </b-tag>
-                                <b-tag  v-else :key="tag.id" type="is-grey">
-                                    {{tag.name}}
-                                </b-tag>
-                            </template>
-                        </b-taglist>
-
-                    <!-- TODO hier moet een Spotify icoon komen -->
-                    <!-- <a href="#" @click="onClickPlay" class="card-footer-item">Play</a> -->
-
-                    <!-- <a href="#" class="card-footer-item">Open in Spotify</a> -->
-                    <!-- TODO hier moet een hartje icoon komen -->
-                    <!-- <a href="#" class="card-footer-item">Add Playlist</a> -->
+                        <template v-for="tag in playlist.tags">
+                            <b-tag v-if="tag.is_theme" :key="tag.id" type="is-primary">
+                                {{tag.name}}
+                            </b-tag>
+                            <b-tag  v-else :key="tag.id" type="is-grey">
+                                {{tag.name}}
+                            </b-tag>
+                        </template>
+                    </b-taglist>
                 </div>
             </div>
         </div>
         <div class="card tracklist">
             <div class="top"> 
-                TRACKLIST: 
+                <span class="header"> TRACKLIST </span>
+                <template v-for="track in playlist.tracks" >
+                    <span class="track" :key="track.id" @click="onClickPlay(track.sequence)"> 
+                        {{track.sequence}}. {{track.artists}} - {{track.title}}  
+                    </span>
+                </template>
             </div>
         </div>
     </section>
@@ -58,7 +56,7 @@ section {
 
     &:hover {
         .vinyl {
-            transition: all 200ms ease;
+            transition: all 150ms ease;
             left: 33%;
         }
     }
@@ -85,7 +83,7 @@ section {
         font-size: 80px;
 
         &:hover {
-            transition: all 200ms ease;
+            transition: all 150ms ease;
             transform: scale(1.1);
         }
     }
@@ -100,7 +98,7 @@ section {
         height: 29rem;
         border: 1px solid #fff;
         background-color: $background;
-        transition: all 200ms ease;
+        transition: all 150ms ease;
 
         &.is-animating {
             animation-name: show;
@@ -135,11 +133,32 @@ section {
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        overflow-y: scroll;
 
         .name {
             padding: 0.5rem;
             border-radius: 0.4rem;
             background-color: $background;
+        }
+
+        .header {
+            margin: 0.8rem;
+        }
+
+        .track {
+            font-size: 0.8rem;
+            overflow-x: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-align: center;
+            line-height: 2rem;
+            cursor: pointer;
+            transition: all 150ms ease;
+
+            &:hover {
+                color: $grey-light;
+            }
         }
     }
 
@@ -190,7 +209,7 @@ export default {
         },
     },
     methods: {
-        onClickPlay() {
+        onClickPlay(sequence) {
             // Find the player component thats attached to default.vue
             const rootPage = this.$root.$children.find((child) => {
                 // Look for property isRoot
@@ -199,10 +218,8 @@ export default {
 
             const player = rootPage?.$refs?.player
 
-            console.log(player, 'clicked play')
-
             if (player) {
-                player.preparePlay(this.getPlaylistUri())
+                player.preparePlay(this.getPlaylistUri(), sequence)
 
                 this.isPlaying = true
             } else {

@@ -28,8 +28,6 @@
              <b-field label="Image">
                 <b-input placeholder="imageUrl" v-model="image"></b-input>
             </b-field>  
-
-            <!-- TODO add tags -->
             <b-button class="is-primary" v-on:click="addPlaylist">Submit</b-button>
         </form>
     </section>

@@ -153,8 +153,8 @@ export default {
     },
 
     methods: {
-        preparePlay(playlistUri) {
-            this.$store.dispatch('player/startPlaylist', playlistUri)
+        preparePlay(playlistUri, sequence) {
+            this.$store.dispatch('player/startPlaylist', { playlistUri, sequence })
         },
 
         updateProgress() {
@@ -190,7 +190,7 @@ export default {
         },
 
         // onResize(event) {
-        //     // TODO make measurements more precise
+        //     // TODO measure on highest level to detect if we have a mobile screen or not
         //     this.isSmallScreen = event.target.innerWidth < 800
         // },
     },

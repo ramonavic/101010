@@ -109,13 +109,15 @@ export const actions = {
     },
 
 
-    startPlaylist({ getters }, playlistUri) {
+    startPlaylist({ getters }, { playlistUri, sequence }) {
 
+        console.log('starting playlist on sequence', sequence)
         this.$axios.put(`https://api.spotify.com/v1/me/player/play?device_id=${getters['getDeviceId']}`,
             {
                 context_uri: playlistUri,
                 offset: {
-                    position: 0,
+                    // Spotify uses indexes, we start counting from 1
+                    position: sequence - 1 || 0,
                 },
             }
         )

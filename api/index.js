@@ -32,7 +32,7 @@ app.use(
         cookie: {
             secure: false,  // if true only transmit cookie over https
             httpOnly: true, // if true prevent client side JS from reading the cookie
-            maxAge: 1000 * 60 * 60 * 24 * 7, // session max age in milliseconds TODO can be changed? 
+            maxAge: 1000 * 60 * 60 * 24 * 7, // session max age in milliseconds (1 week)
         }
     })
 )

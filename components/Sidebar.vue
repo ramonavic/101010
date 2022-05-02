@@ -43,31 +43,31 @@ export default {
         // sort playlists by theme
         console.log(this.playlists)
 
-        try {
-            const tags = await this.$store.dispatch('tags/fetchTags')
+        // try {
+        //     // TODO only necessary if we want to sort the playlists on themes
+        //     // const tags = await this.$store.dispatch('tags/fetchTags')
 
-            // TODO decide: can also be done in store. So they can get there own setters.
-            tags.forEach((tag) => {
-                if (tag.is_theme && !this.themes.some((theme) => theme.id === tag.id)) {
-                    this.themes.push(tag)
-                    return
-                }
+        //     // TODO decide: can also be done in store. So they can get there own setters.
+        //     tags.forEach((tag) => {
+        //         if (tag.is_theme && !this.themes.some((theme) => theme.id === tag.id)) {
+        //             this.themes.push(tag)
+        //             return
+        //         }
 
-                if (!tag.is_theme && !this.tags.some((t) => tag.id === t.id)) {
-                    this.tags.push(tag)
-                }
-            })
-        } catch (err) {
-            console.error(err)
-        }
+        //         if (!tag.is_theme && !this.tags.some((t) => tag.id === t.id)) {
+        //             this.tags.push(tag)
+        //         }
+        //     })
+        // } catch (err) {
+        //     console.error(err)
+        // }
 
-        console.log('added themes', this.themes)
-        console.log('added tags', this.tags)
+        // console.log('added themes', this.themes)
+        // console.log('added tags', this.tags)
     },
 
     methods: {
         onHover(id) {
-            console.log('hovering', id)
             this.$emit('preview', id)
         },
     },

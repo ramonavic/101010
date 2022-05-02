@@ -87,8 +87,6 @@ export const addTagsToPlaylist = async (req, res) => {
         // When we have multiple new tags, we will receive an array from the batch query
         if (Object.prototype.toString.call(newTagsInDB) === '[object Array]') {
 
-            console.log('new tags is object')
-
             newTagsInDB.forEach((tag) => {
 
                 tagIdsForPlaylist.push(tag.insertId)
@@ -106,7 +104,7 @@ export const addTagsToPlaylist = async (req, res) => {
 
     await Playlist.addTags(playlistId, tagIdsForPlaylist)
 
-    const tagObjects = newTagIds && await Tag.getTagsById(newTagIds) || []
+    const tagObjects = newTagIds?.length && await Tag.getTagsById(newTagIds) || []
 
     const responseObject = {
         status: 'success',

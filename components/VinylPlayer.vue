@@ -18,14 +18,8 @@
                         </b-tag>
                     </template>
                 </b-taglist>
-                <!-- <br> -->
-                <!-- <span> 
-                    <b-icon icon="clock"></b-icon>
-                    <time datetime="2016-1-1">{{createdDate}}</time>
-                </span> -->
             </div>
         </div>
-        <!-- <iframe :src="embedLink" class="playlist" width="100%" height="250" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe> -->
         <div class="card-footer">
 
             <!-- TODO hier moet een Spotify icoon komen -->

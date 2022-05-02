@@ -20,18 +20,22 @@ export const index = async (req, res) => {
 
     const tags = await Tag.getAllAttachedToPlaylists()
 
+    const tracks = await Playlist.getAllTracks()
+
     // Attach tag array to playlist objects
     playlists.forEach((playlist, index) => {
-        playlists[index].tags = []
-        tags.forEach((tag) => {
+
+        playlists[index].tracks = tracks.filter((track) => track.playlist_id === playlist.id)
+
+        playlists[index].tags = tags.filter((tag) => {
             if (tag.playlist_id === playlist.id) {
 
-                // Themes alwys go in the front
-                if (tag.is_theme) {
-                    return playlist.tags.unshift(tag)
-                }
+                // TODO make sure is_theme is sorted as first
+                // if (tag.is_theme) {
+                //     return playlist.tags.unshift(tag)
+                // }
 
-                playlist.tags.push(tag)
+                return tag
             }
         })
     })
