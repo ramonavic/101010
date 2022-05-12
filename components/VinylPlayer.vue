@@ -1,5 +1,5 @@
 <template>
-    <div class="container card">
+    <div v-if="playlist" class="container card">
         <div class="top">
             <div class="title over-image"> {{playlist.name}} </div>
             <div class="card-image" :style="backgroundImage" v-bind:class="{'is-spinning': isPlaying}">
@@ -18,14 +18,8 @@
                         </b-tag>
                     </template>
                 </b-taglist>
-                <!-- <br> -->
-                <!-- <span> 
-                    <b-icon icon="clock"></b-icon>
-                    <time datetime="2016-1-1">{{createdDate}}</time>
-                </span> -->
             </div>
         </div>
-        <!-- <iframe :src="embedLink" class="playlist" width="100%" height="250" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe> -->
         <div class="card-footer">
 
             <!-- TODO hier moet een Spotify icoon komen -->
@@ -58,7 +52,7 @@
     }
 
     .card-image {
-        z-index: 1;
+        z-index: $z-card-image;
         margin-bottom: 1rem;
         height: 20rem;
         width: 20rem;
@@ -88,7 +82,7 @@
             border-radius: 50%;
             background: $background;
             position: absolute;
-            z-index: 80;
+            z-index: $z-album-cover;
             top: 8.71rem;
             left: 8.71rem;
             width: 2rem;
@@ -128,18 +122,14 @@
 </style>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
     data() {
         return {
             spotifyUser: 'ramonavic',
             isPlaying: false,
         }
-    },
-    props: {
-        playlist: {
-            type: Object,
-        },
-        playlistLength: Number,
     },
     computed: {
         createdDate() {
@@ -149,10 +139,14 @@ export default {
             return `https://open.spotify.com/embed/playlist/${this.playlist.spotify_id}?utm_source=generator&theme=0`
         },
         backgroundImage() {
+            console.log(this.playlist)
             return {
                 'background-image': `url(${this.playlist.image})`,
             }
         },
+        ...mapGetters({
+            playlist: 'player/getCurrentPlaylist',
+        }),
     },
     methods: {
         onClickPlay() {

@@ -81,9 +81,6 @@ export default {
                 this.$store.commit('tags/SET_FILTERED_TAGS', query)
             },
         },
-
-        // TODO it's better to filter in playlists instead of playlistNames so that we
-        // dont have to find a playlist by name later.
         filteredPlaylists: {
             get() {
                 return this.$store.getters['playlists/getFilteredPlaylistNames']
@@ -103,10 +100,7 @@ export default {
         },
 
         addTagsToPlaylist() {
-            console.log('submitting tags', this.chosenTags, this.chosenPlaylist)
-
             const tagsForPlaylist = this.prepareTagsForPlaylist()
-            console.log(tagsForPlaylist)
             const data = {
                 playlistId: this.getPlaylistIdForName(),
                 tagsForPlaylist,
@@ -135,9 +129,7 @@ export default {
         prepareTagsForPlaylist() {
             return this.chosenTags.map((chosenTagName) => {
                 const existingTag = this.tags.find((tag) => tag.name === chosenTagName)
-                console.log('existing tag', existingTag)
                 if (!existingTag) {
-                    console.log('chosen tag', chosenTagName)
                     return {
                         chosenTagName,
                         isNew: true,

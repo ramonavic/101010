@@ -3,10 +3,7 @@ import * as Admin from '../controllers/admin'
 import { spotifyAuthCheck } from '../auth/spotify'
 import { adminCheck } from '../auth/admin'
 
-
 const router = Router()
-
-// TODO add Admin check middleware
 
 router
     .get('/admin/get_playlist/:id', adminCheck, spotifyAuthCheck, Admin.getPlaylist)

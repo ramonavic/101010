@@ -1,6 +1,16 @@
 // Import Bulma's core
 @import "~bulma/sass/utilities/_all";
 
+
+// Z-indexes
+$z-nav: 100;
+$z-album-cover: 80;
+$z-card-content: 2;
+$z-card-image: 2;
+$z-vinyl: 1;
+
+
+
 // Set your colors
 $grey-lighter: #dbdee0;
 $grey-light: #8c9b9d;
@@ -107,6 +117,8 @@ $navbar-dropdown-item-hover-background-color: transparent;
 $navbar-dropdown-item-active-background-color: transparent;
 $navbar-dropdown-item-active-color: $link;
 
+$menu-label-font-size: 1em;
+
 $dropdown-content-background-color: $background;
 $dropdown-item-color: $text;
 
@@ -187,6 +199,7 @@ $colors: mergeColorMaps(
 $link: $primary;
 $link-invert: $primary-invert;
 $link-focus-border: $primary;
+
 
 // Import Bulma and Buefy styles
 // Important to do this at the end for succesful overwritng

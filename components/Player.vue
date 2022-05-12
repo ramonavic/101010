@@ -130,7 +130,7 @@ export default {
         },
     },
 
-    async beforeCreate() {
+    async mounted() {
         try {
             await this.$store.dispatch('playlists/fetchPlaylists')
         } catch (err) {
@@ -140,9 +140,7 @@ export default {
                 // TODO dont render player. So this fetch must be done at a higher level
             }
         }
-    },
 
-    mounted() {
         const script = document.createElement('script')
         script.src = 'https://sdk.scdn.co/spotify-player.js'
         script.async = true
@@ -155,8 +153,8 @@ export default {
     },
 
     methods: {
-        preparePlay(playlistUri) {
-            this.$store.dispatch('player/startPlaylist', playlistUri)
+        preparePlay(playlistUri, sequence) {
+            this.$store.dispatch('player/startPlaylist', { playlistUri, sequence })
         },
 
         updateProgress() {
@@ -192,7 +190,7 @@ export default {
         },
 
         // onResize(event) {
-        //     // TODO make measurements more precise
+        //     // TODO measure on highest level to detect if we have a mobile screen or not
         //     this.isSmallScreen = event.target.innerWidth < 800
         // },
     },

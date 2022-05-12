@@ -33,7 +33,8 @@ export default class DB {
     }
 
     async query(query, params) {
-
+        console.log(query)
+        console.log(params)
         try {
             const [results, fields] = await this.db.query(query, params)
             return results

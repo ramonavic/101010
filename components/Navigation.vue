@@ -10,7 +10,7 @@
             <b-navbar-item href="#">
                 Saved Playlists
             </b-navbar-item>
-            <b-navbar-dropdown label="Admin">
+            <b-navbar-dropdown v-if="user && user.is_admin" label="Admin">
                 <b-navbar-item href="/admin/add_playlist">
                     Add Playlist
                 </b-navbar-item>
@@ -27,42 +27,37 @@
                         <a class="button is-primary" @click="isRegisterModalActive = true">
                             Sign up
                         </a>
-                        <b-modal 
+                        <b-sidebar 
                             v-model="isRegisterModalActive" 
                             v-on:close-subscribe-modal="onCloseSubscribeModal"
-                            width:="700px"
+                            :fullwidth=true
+                            :fullheight=true
+                            :right=true
                         >
                             <RegisterModal
-                                has-modal-card
-                                trap-focus
-                                aria-role="dialog"
                                 aria-label="Subscribe to 101010"
-                                close-button-aria-label="Close"
-                                aria-modal
                             />
-                        </b-modal>
+                        </b-sidebar>
                         <a class="button is-light" @click="isLoginModalActive = true">
                             Login
                         </a>
-                        <b-modal 
+                        <b-sidebar 
                             v-model="isLoginModalActive" 
                             width="700px" 
                             v-on:close-login-modal="onCloseLoginModal"
+                            :fullwidth=true
+                            :fullheight=true
+                            :right=true
                         >
 
                             <LoginModal
-                                has-modal-card
-                                trap-focus
-                                aria-role="dialog"
                                 aria-label="Subscribe to 101010"
-                                close-button-aria-label="Close"
-                                aria-modal
                             />
-                        </b-modal>
+                        </b-sidebar>
                       
-                           <a href="/api/users/connect_spotify" class="button is-primary">
-                            <strong>Connect Spotify</strong>
-                        </a>
+                            <a href="/api/users/connect_spotify" class="button is-primary">
+                                <strong>Connect Spotify</strong>
+                            </a>
                     </div>
                     <div v-else>
                         <a v-on:click=logOut() class="button is-light"> 
@@ -78,11 +73,19 @@
     </b-navbar>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .nav {
     box-shadow: unset;
     border-bottom: 1px solid $grey-dark;
     border-radius: 0px;
+    z-index: $z-nav !important;
+}
+
+.b-sidebar {
+    .is-fullheight {
+        justify-content: center;
+        margin-top: -4rem; // Minus height of player
+    }
 }
 </style>
 
@@ -118,16 +121,24 @@ export default {
                 )
                 this.$router.replace({ query: null })
             } catch (err) {
-                console.log(err)
-                if (err.message) {
-                    // window.alert(`${err.message} ${err.error}`)
-                }
+                console.log('caught error', err)
+
+                this.$buefy.notification.open({
+                    message: `The login link is invalid or expired. <br /> Please request another one.`,
+                    type: 'is-danger',
+                    hasIcon: true,
+                    indefinite: true,
+                    closable: true,
+                    position: 'is-bottom',
+                })
+
+                return
             }
         } else {
             response = await this.$axios.get('/api/users/check_auth')
         }
 
-        if (response.data) {
+        if (response?.data) {
             this.$store.commit('user/MUTATE_USER', response.data)
         }
         console.log('current state of user store', this.$store.state.user)

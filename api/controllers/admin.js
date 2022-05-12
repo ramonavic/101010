@@ -37,17 +37,10 @@ export const addPlaylist = async (req, res) => {
 
     console.log('params to be added', params)
 
-    const exists = await Playlist.checkIfExists(params.spotify_id)
+    const playlistId = await Playlist.add(params)
 
-    if (exists) {
-        res.status(400).json({ status: 'error', type: 'Playlist exists' })
-    } else {
-
-        const playlistId = await Playlist.add(params)
-
-        console.log('Successfully added playlist: ', playlistId)
-        res.json({ status: 'success', playlistId })
-    }
+    console.log('Successfully added playlist: ', playlistId)
+    res.json({ status: 'success', playlistId })
 }
 
 export const getTags = async (req, res) => {
@@ -87,8 +80,6 @@ export const addTagsToPlaylist = async (req, res) => {
         // When we have multiple new tags, we will receive an array from the batch query
         if (Object.prototype.toString.call(newTagsInDB) === '[object Array]') {
 
-            console.log('new tags is object')
-
             newTagsInDB.forEach((tag) => {
 
                 tagIdsForPlaylist.push(tag.insertId)
@@ -106,7 +97,7 @@ export const addTagsToPlaylist = async (req, res) => {
 
     await Playlist.addTags(playlistId, tagIdsForPlaylist)
 
-    const tagObjects = newTagIds && await Tag.getTagsById(newTagIds) || []
+    const tagObjects = newTagIds?.length && await Tag.getTagsById(newTagIds) || []
 
     const responseObject = {
         status: 'success',

@@ -28,6 +28,7 @@ export const actions = {
     async fetchTags({ commit }) {
         const response = await this.$axios.get('/api/admin/fetch_tags')
         commit('UPDATE_TAGS', response.data.tags)
+        return response.data.tags
     },
 
     async addTagsToPlaylist({ commit, state }, payload) {
