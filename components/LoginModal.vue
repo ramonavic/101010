@@ -18,9 +18,6 @@
                     </b-input>
                 </b-field>
             </section>
-
-            <!-- TODO add checkbox: I want to receive emails when new playlists come out -->
-
             <footer class="modal-card-foot">
                 <b-button
                     label="Cancel"

@@ -49,10 +49,10 @@ export default class User {
      * or not.
      * @returns The query result.
      */
-    async registerUserThroughEmail(name, email, subscribeToMail) {
+    async registerUserThroughEmail(name, email, isSubscribed) {
         const result = await this.db.query(
-            `INSERT INTO results (name, email, mail_subscription) VALUES (?, ?, ?)`,
-            [name, email, subscribeToMail]
+            `INSERT INTO users (name, email, mail_subscription) VALUES (?, ?, ?)`,
+            [name, email, isSubscribed]
         )
 
         if (!result.insertId) {

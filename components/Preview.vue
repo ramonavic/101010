@@ -1,7 +1,10 @@
 <template>
     <section>
         <div class="card">
-            <div class="vinyl" v-bind:class="{'is-animating': isAnimating}" ></div>
+            <div 
+                id="vinyl" 
+                v-bind:class="{'is-animating': isAnimating}"   
+            ></div>
             <div class="card-image" :style="backgroundImage">
                 <div class="top">
                     <div class="name"> {{playlist.name}} </div>
@@ -27,16 +30,7 @@
                 </div>
             </div>
         </div>
-        <div class="card tracklist">
-            <div class="top"> 
-                <span class="header"> TRACKLIST </span>
-                <template v-for="track in playlist.tracks" >
-                    <span class="track" :key="track.id" @click="onClickPlay(track.sequence)"> 
-                        {{track.sequence}}. {{track.artists}} - {{track.title}}  
-                    </span>
-                </template>
-            </div>
-        </div>
+        <Tracklist :tracks="playlist.tracks" />
     </section>
 </template>
 
@@ -70,7 +64,7 @@ section {
         position: absolute;
         background-color: $background;
         top: 0;
-        z-index: 2;
+        z-index: $z-card-image;
     }
 
     .play-btn {
@@ -88,11 +82,11 @@ section {
         }
     }
 
-    .vinyl {
+    #vinyl {
         position: absolute;
         left: 30%;
         top: 0.5rem;
-        z-index: 1;
+        z-index: $z-vinyl;
         border-radius: 50%;
         width: 29rem;
         height: 29rem;
@@ -140,26 +134,6 @@ section {
             border-radius: 0.4rem;
             background-color: $background;
         }
-
-        .header {
-            margin: 0.8rem;
-        }
-
-        .track {
-            font-size: 0.8rem;
-            overflow-x: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            width: 100%;
-            text-align: center;
-            line-height: 2rem;
-            cursor: pointer;
-            transition: all 150ms ease;
-
-            &:hover {
-                color: $grey-light;
-            }
-        }
     }
 
     .playlist {
@@ -177,8 +151,12 @@ section {
 
 <script>
 import { mapGetters } from 'vuex'
+import draggable from 'vuedraggable'
 
 export default {
+    components: {
+        draggable,
+    },
     data() {
         return {
             spotifyUser: 'ramonavic',
@@ -201,7 +179,9 @@ export default {
     },
     watch: {
         playlist() {
-            this.isAnimating = true
+            if (!this.isAnimating) {
+                this.isAnimating = true
+            }
 
             setTimeout(() => {
                 this.isAnimating = false
@@ -229,6 +209,9 @@ export default {
         getPlaylistUri() {
             return `spotify:user:${this.spotifyUser}:playlist:${this.playlist.spotify_id}`
         },
+    },
+    mounted() {
+        console.log(VueDND)
     },
 }
 </script>

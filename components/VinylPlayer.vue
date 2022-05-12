@@ -52,7 +52,7 @@
     }
 
     .card-image {
-        z-index: 1;
+        z-index: $z-card-image;
         margin-bottom: 1rem;
         height: 20rem;
         width: 20rem;
@@ -82,7 +82,7 @@
             border-radius: 50%;
             background: $background;
             position: absolute;
-            z-index: 80;
+            z-index: $z-album-cover;
             top: 8.71rem;
             left: 8.71rem;
             width: 2rem;

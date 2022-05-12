@@ -10,7 +10,7 @@
             <b-navbar-item href="#">
                 Saved Playlists
             </b-navbar-item>
-            <b-navbar-dropdown label="Admin">
+            <b-navbar-dropdown v-if="user && user.is_admin" label="Admin">
                 <b-navbar-item href="/admin/add_playlist">
                     Add Playlist
                 </b-navbar-item>
@@ -78,6 +78,7 @@
     box-shadow: unset;
     border-bottom: 1px solid $grey-dark;
     border-radius: 0px;
+    z-index: $z-nav !important;
 }
 
 .b-sidebar {
@@ -120,16 +121,24 @@ export default {
                 )
                 this.$router.replace({ query: null })
             } catch (err) {
-                console.log(err)
-                if (err.message) {
-                    // window.alert(`${err.message} ${err.error}`)
-                }
+                console.log('caught error', err)
+
+                this.$buefy.notification.open({
+                    message: `The login link is invalid or expired. <br /> Please request another one.`,
+                    type: 'is-danger',
+                    hasIcon: true,
+                    indefinite: true,
+                    closable: true,
+                    position: 'is-bottom',
+                })
+
+                return
             }
         } else {
             response = await this.$axios.get('/api/users/check_auth')
         }
 
-        if (response.data) {
+        if (response?.data) {
             this.$store.commit('user/MUTATE_USER', response.data)
         }
         console.log('current state of user store', this.$store.state.user)

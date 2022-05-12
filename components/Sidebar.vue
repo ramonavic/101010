@@ -21,7 +21,7 @@
         </b-menu>
       </div>
     </b-sidebar>
-    <b-button @click="open = true">Show</b-button>
+    <b-button @click="open = true">Choose Playlist</b-button>
   </section>
 </template>
 

@@ -33,7 +33,7 @@ export default class Playlist {
     }
 
     async getIdBySpotifyId(spotifyId) {
-        const result = this.db.single(`SELECT id FROM playlists WHERE spotify_id = ?`, [spotifyId])
+        const result = await this.db.single(`SELECT id FROM playlists WHERE spotify_id = ?`, [spotifyId])
         console.log(result)
         return result.id
     }

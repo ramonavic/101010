@@ -7,7 +7,8 @@ export const state = () => ({
     playlists: [],
     playlistNames: [],
     filteredPlaylistNames: [],
-    preview: []
+    preview: [],
+    listenState: 'browse' // either browse or vinyl
 })
 
 export const mutations = {

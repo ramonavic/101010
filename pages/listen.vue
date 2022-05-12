@@ -1,7 +1,10 @@
 <template>
     <div class="page-container">
-        <div class="browser" v-if="isBrowsing">
+        <div class="buttons"> 
+            <b-button @click="isBrowsing = !isBrowsing"> {{isBrowsing ? 'Vinyl Player' : 'Browser'}}</b-button>
             <Sidebar :playlists="playlists" @preview="preview" /> 
+        </div>
+        <div class="browser" v-if="isBrowsing">
             <Preview />
         </div>
 
@@ -13,11 +16,18 @@
 
 <style lang="scss">
 .page-container {
-    display: flex;
     background-color: $background;
 
     @media screen and (max-width: 780px) {
         justify-content: center;
+    }
+}
+
+.buttons {
+    display: flex;
+
+    > * {
+        margin-right: 1rem;
     }
 }
 // .playlists-container {
