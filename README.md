@@ -30,6 +30,10 @@ Fill in `MAIL_USER` and `MAIL_PASSWORD` in the .env file
 **3. Run migrations in seed file** <br />
 TODO: need to make this
 
+**4. Start servers**
+- Run `docker-compose up -d` in the /docker folder
+- Run `npm run build dev`
+
 
 
 
