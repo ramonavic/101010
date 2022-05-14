@@ -15,7 +15,7 @@
 
 .player-container {
     position: fixed;
-    z-index: 100; // TODO create z-indexes file
+    z-index: 100;
     width: 100vw;
     border-top: 1px solid $grey-dark;
 }

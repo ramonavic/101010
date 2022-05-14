@@ -86,7 +86,8 @@ export const actions = {
         const player = new window.Spotify.Player({
             name: '101010 Spotify Player',
             getOAuthToken: (cb) => {
-                // TODO find way to re-add auth token when it's removed
+
+                // TODO find way to re-add auth token when it's removed. So far doesn't seem necessary?
                 console.log('doing check auth from spotify player', getters['getAccessToken'])
                 // const response = await this.$axios.get('/api/users/check_auth')
 

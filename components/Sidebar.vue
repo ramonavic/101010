@@ -2,7 +2,6 @@
   <section>
     <b-sidebar
       type="is-dark"
-      :fullheight="true"
       :right="true"
       v-model="open"
     >

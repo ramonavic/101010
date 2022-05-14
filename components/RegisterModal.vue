@@ -35,8 +35,6 @@
                         </b-input>
                     </b-field>
                 </section>
-
-                <!-- TODO add checkbox: I want to receive emails when new playlists come out -->
                 <section class="modal-card__checkbox">
                     <b-checkbox 
                         v-model="isSubscribed"

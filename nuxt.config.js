@@ -22,9 +22,7 @@ export default {
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-    // { src: '~/plugins/vuednd', ssr: true }
-  ],
+  plugins: [],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -52,12 +50,6 @@ export default {
     extend(config, ctx) {
 
     }
-  },
-
-  // TODO probably not in use
-  env: {
-    spotifyid: process.env.SPOTIFY_CLIENT_ID,
-    clientURL: process.env.CLIENT_URL
   },
 
   serverMiddleware: ['~/api']
