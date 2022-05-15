@@ -11,10 +11,11 @@ Users can also subscribe to receive playlists and in a later phase it might be f
 Not everything is there yet. 
 
 ### Important todo's before launch of V1: 
-- Landing and Settings page
+= Landing and Settings page
 - Encryption 
 - Better Playlist Selection module
 - Users can save playlists to their Spotify account
+- Better error handling
 - Integration with email program on production
 - Get a VPS and create deployment strategy (either quick n dirty through docker-compose or kubernetes on a VM)
 
