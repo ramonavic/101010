@@ -7,7 +7,10 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "dev-debug": "node --inspect node_modules/.bin/nuxt"
+    "dev-debug": "node --inspect node_modules/.bin/nuxt",
+    "migrate": "npm run migrate-structure && npm run migrate-data",
+    "migrate-structure": "node -r dotenv/config tools/migrations/migrate-structure.mjs",
+    "migrate-data": "node -r dotenv/config tools/migrations/migrate-data.mjs"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.13.6",
