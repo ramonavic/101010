@@ -2,10 +2,7 @@ import DB from '../../../api/db.mjs'
 
 const db = new DB()
 
-console.log('started document')
-
 export const up = () => {
-    console.log('inside up')
     return db.query(
         `CREATE TABLE \`playlist_tracks\` (
             \`id\` int NOT NULL AUTO_INCREMENT,
