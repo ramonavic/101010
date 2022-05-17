@@ -1,5 +1,5 @@
 # 101010 (WIP)
-Welcome to my little Spotify integration! . 
+Welcome to my little Spotify integration!
 Over the years I have collected quite some music through Spotify all scattered over more than a hundred playlists.
 Some of them have hundreds of songs and are a bit polluted. 
 That is why I thought this project could be a perfect moment to combine my passion for coding and building with music. 
@@ -11,7 +11,7 @@ Users can also subscribe to receive playlists and in a later phase it might be f
 Not everything is there yet. 
 
 ### Important todo's before launch of V1: 
-= Landing and Settings page
+- Landing and Settings page
 - Encryption 
 - Better Playlist Selection module
 - Users can save playlists to their Spotify account
@@ -29,7 +29,7 @@ Not everything is there yet.
 Fill in `MAIL_USER` and `MAIL_PASSWORD` in the .env file
 
 **3. Run migrations in seed file** <br />
-TODO: need to make this
+npm run migrate
 
 **4. Start servers**
 - Run `docker-compose up -d` in the /docker folder
