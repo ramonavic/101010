@@ -1,9 +1,8 @@
-// TODO 
-// - Create migrations table with name, type, executed (bool)
-// - iterate through structure files 
+// Steps:
+// - iterate through data folder and look for mjs files 
 // - check if migration exists in DB and is executed
 // - execute migrations
-// - add executed at to migrations row
+// - add row to db_migrations
 
 import fs from 'fs/promises'
 import { dirname } from 'path'
@@ -21,31 +20,29 @@ for (const file of directory) {
     }
 
     const name = file.split('.mjs')[0]
-    console.log('got mjs file', file)
-
     const result = await migrate.checkIfExecuted('data', name)
-    console.log('is executed', result)
+
     if (result[0]?.executed_at) {
 
         // Dont execute file again
         continue
     }
-    console.log('going to exec file')
     const { up } = await import(`./data/${file}`)
-    console.log(up)
 
     const migrationQuery = await up()
     if (migrationQuery.errno) {
 
-        // TODO Break the loop and throw error?
+        // Don't insert migration row because query failed. Error will be logged in db.js
         break
     }
 
     await migrate.updateMigration(name, 'data')
 
+    console.log('Migrated data file: ', file)
 
-    // TODO add row to migrations table with type = data
 }
+
+process.exit(0)
 
 
 

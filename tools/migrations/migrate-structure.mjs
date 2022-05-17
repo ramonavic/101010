@@ -1,5 +1,5 @@
-// TODO 
-// - Create migrations table with name, type, executed (bool)
+// Steps:
+// - Create migrations table with name, type, executed_at 
 // - iterate through structure files 
 // - check if migration exists in DB and is executed
 // - execute migrations
@@ -25,24 +25,20 @@ for (const file of directory) {
     }
 
     const name = file.split('.mjs')[0]
-    console.log('got mjs file', file)
-
     const result = await migrate.checkIfExecuted('structure', name)
-    console.log('is executed', result)
+
     if (result[0]?.executed_at) {
 
         // Dont execute file again
         continue
     }
-    console.log('going to exec file')
-    const { up } = await import(`./structure/${file}`)
-    console.log(up)
 
+    const { up } = await import(`./structure/${file}`)
     const migrationQuery = await up()
 
     if (migrationQuery.errno) {
 
-        // TODO Break the loop and throw error?
+        // Don't insert migration row because query failed. Error will be logged in db.js
         break
     }
 
