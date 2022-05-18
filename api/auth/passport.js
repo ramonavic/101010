@@ -2,6 +2,7 @@ import passportCustom from 'passport-custom';
 import jwt from 'jsonwebtoken'
 import UserModel from '../models/User'
 import passport from 'passport';
+import encryption from '../encryption'
 
 export const setupLoginStrategies = () => {
     const User = new UserModel()
@@ -30,7 +31,7 @@ export const setupLoginStrategies = () => {
 
             const { email, expiration } = decoded
 
-            const user = await User.findUser(email)
+            const user = await User.findUser(encryption.hash(email))
 
             // Verify JWT
             if (!user) {

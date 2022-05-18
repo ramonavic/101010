@@ -10,17 +10,17 @@ import { setupLoginStrategies } from './auth/passport'
 const RedisStore = new redisStore(session)
 const Redis = new redis()
 
+import encryption from './encryption'
+console.log(encryption.hash('ramon.hofmeister@gmail.comramon.hofmeister@gmail.com'))
+
+
 // Import routes
 import users from './routes/users'
 import playlists from './routes/playlists'
 import admin from './routes/admin'
 
-
-// Migrate to .env files
-const cookieSecret = 'RhQ-5NtjNAphRzoEyJ-BmqKXATLFOMo8'
-
 const app = express()
-app.use(cookieParser(cookieSecret, { httpOnly: true }))
+app.use(cookieParser(process.env.COOKIE_SECRET, { httpOnly: true }))
 app.use(express.json())
 app.use(cors())
 

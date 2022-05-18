@@ -1,4 +1,4 @@
-import DB from '../db'
+import DB from '../db.mjs'
 
 export default class User {
     constructor() {
@@ -10,14 +10,14 @@ export default class User {
      * @param email - The email of the user to find.
      * @returns A user object
      */
-    async findUser(email) {
+    async findUser(hashedEmail) {
         const user = await this.db.single(
             `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
                 FROM users 
-            WHERE email = ? 
+            WHERE hashed_email = ? 
                 AND deleted_at IS NULL 
             LIMIT 1`,
-            [email]
+            [hashedEmail]
         )
 
         console.log('db user', user)

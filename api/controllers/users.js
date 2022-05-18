@@ -2,6 +2,7 @@ import Mailer from '../mailer'
 import UserModel from '../models/User'
 import SpotifyModel from '../models/Spotify'
 import jwt from 'jsonwebtoken'
+import encryption from '../encryption'
 
 const mailer = new Mailer()
 const User = new UserModel()
@@ -131,7 +132,7 @@ export const setUserCookie = (res, user) => {
 export const register = async (req, res) => {
     const { name, email, isSubscribed } = req.body.params
 
-    const userExists = await User.findUser(email)
+    const userExists = await User.findUser(encryption.hash(email))
 
     console.log(userExists)
 
@@ -163,7 +164,7 @@ export const requestLogin = async (req, res) => {
     console.log('requesting login')
     const email = req.body.params.email
 
-    const user = await User.findUser(email)
+    const user = await User.findUser(encryption.hash(email))
 
     console.log('user exists?', user)
 
