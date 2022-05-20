@@ -45,6 +45,8 @@ export default class DB {
     }
 
     async single(query, params) {
+        console.log(query)
+        console.log(params)
         try {
             const [results, fields] = await this.db.query(query, params)
             return results[0]

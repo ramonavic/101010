@@ -10,10 +10,6 @@ import { setupLoginStrategies } from './auth/passport'
 const RedisStore = new redisStore(session)
 const Redis = new redis()
 
-import encryption from './encryption'
-console.log(encryption.hash('ramon.hofmeister@gmail.comramon.hofmeister@gmail.com'))
-
-
 // Import routes
 import users from './routes/users'
 import playlists from './routes/playlists'
@@ -29,6 +25,7 @@ app.use(
         store: new RedisStore({ client: Redis.connection, session }),
         secret: process.env.SESSION_SECRET,
         resave: false,
+        saveUnitialized: false,
         cookie: {
             secure: false,  // if true only transmit cookie over https
             httpOnly: true, // if true prevent client side JS from reading the cookie

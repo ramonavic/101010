@@ -31,7 +31,7 @@ export const setupLoginStrategies = () => {
 
             const { email, expiration } = decoded
 
-            const user = await User.findUser(encryption.hash(email))
+            const user = await User.findUser(email)
 
             // Verify JWT
             if (!user) {

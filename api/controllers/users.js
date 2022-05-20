@@ -132,7 +132,7 @@ export const setUserCookie = (res, user) => {
 export const register = async (req, res) => {
     const { name, email, isSubscribed } = req.body.params
 
-    const userExists = await User.findUser(encryption.hash(email))
+    const userExists = await User.findUser(email)
 
     console.log(userExists)
 
@@ -146,7 +146,12 @@ export const register = async (req, res) => {
 
             // TODO this is not the right way. Better is to send email first with all necessary 
             // info in the JWT. Then make a new account on the fly based on info. But for now not important enough. 
-            await User.registerUserThroughEmail(name, email, isSubscribed)
+            await User.registerUserThroughEmail(
+                name,
+                email,
+                isSubscribed
+            )
+
         } catch (err) {
             console.log(err)
             return res.status(404).json(err)
@@ -164,7 +169,7 @@ export const requestLogin = async (req, res) => {
     console.log('requesting login')
     const email = req.body.params.email
 
-    const user = await User.findUser(encryption.hash(email))
+    const user = await User.findUser(email)
 
     console.log('user exists?', user)
 

@@ -1,29 +1,66 @@
 import crypto from 'crypto'
 
-const algorithm = 'aes-256-ctr'
+const algorithm = 'aes-256-cbc'
 
-const iv = Buffer.from(crypto.randomBytes(16), "hex")
+// const iv = Buffer.from(crypto.randomBytes(16), "hex")
+
 const secretKey = process.env.ENCRYPTION_SECRET
 const salt = process.env.ENCRYPTION_SALT
 
 export default {
-    encrypt(text) {
-        const cipher = crypto.createCipheriv(algorithm, Buffer.from(secretKey, 'hex'), iv);
-        let encryptedData = cipher.update(text, "utf-8", "hex");
-        encryptedData += cipher.final("hex");
 
-        console.log('decrypted', text, 'encrypted', encryptedData)
-        return encryptedData;
+    // TODO: nice to prepend something like 'enCRY=' to the encrypted string. 
+    // Would make it easier to create a decryptMultiple function and to recognize encrypted fields in DB. 
+
+    encrypt(text) {
+
+        if (!text) {
+
+            console.log('No text given. Returning from encryption.')
+            return
+        }
+
+        const iv = crypto.randomBytes(16)
+
+        // Creating cipher object
+        let cipher = crypto.createCipheriv(algorithm, Buffer.from(secretKey), iv);
+
+        // Encrypt and create a Buffer as output
+        let encrypted = cipher.update(text);
+
+        encrypted = Buffer.concat([encrypted, cipher.final()]);
+
+        // Add IV to encrypted string and change to hex 
+        // Example: enCRY=b259406bbaf052088fe9039a78faa411-1c450ce50bc79b919e7cef1c302e7675
+        const encryptedString = `ehCRY=${iv.toString('hex')}-${encrypted.toString('hex')}`
+
+        return encryptedString
     },
 
     decrypt(text) {
-        const decipher = crypto.createDecipheriv(algorithm, Buffer.from(secretKey, 'hex'), iv);
-        let decryptedData = decipher.update(text, "hex", "utf-8");
-        decryptedData += decipher.final("utf8");
 
-        console.log('encrypted', text, 'decrypted', decryptedData)
+        // Constructed as encRY=#{iv}-${encryptedData}
+        // enCRY=b259406bbaf052088fe9039a78faa411-1c450ce50bc79b919e7cef1c302e7675
+        if (!text || !/^ehCRY=/.test(text)) {
+            console.log('No text given. Returning from decryption.')
+            return
+        }
 
-        return decryptedData;
+        // Take the iv hex from the string and transform it back to bytes
+        let iv = text.match(/ehCRY=(.*)-/)[1]
+        iv = Buffer.from(iv, 'hex')
+
+        // Do the same with the encrypted string
+        let encrypted = text.match(/-(.*)/)[1]
+        encrypted = Buffer.from(encrypted, 'hex')
+
+        // Create decipher object
+        const decipher = crypto.createDecipheriv(algorithm, Buffer.from(secretKey), iv);
+
+        let decrypted = decipher.update(encrypted)
+        decrypted = Buffer.concat([decrypted, decipher.final()])
+
+        return decrypted.toString();
     },
 
     hash(text) {

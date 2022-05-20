@@ -43,9 +43,9 @@ export const up = () => {
           
           CREATE TABLE \`users\` (
             \`id\` int NOT NULL AUTO_INCREMENT,
-            \`name\` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-            \`spotify_id\` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-            \`email\` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+            \`name\` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+            \`spotify_id\` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+            \`email\` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
             \`refresh_token\` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
             \`created_at\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
             \`last_modified\` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
