@@ -25,9 +25,9 @@ app.use(
         store: new RedisStore({ client: Redis.connection, session }),
         secret: process.env.SESSION_SECRET,
         resave: false,
-        saveUnitialized: false,
+        saveUninitialized: false,
         cookie: {
-            secure: false,  // if true only transmit cookie over https
+            secure: true,  // if true only transmit cookie over https
             httpOnly: true, // if true prevent client side JS from reading the cookie
             maxAge: 1000 * 60 * 60 * 24 * 7, // session max age in milliseconds (1 week)
         }

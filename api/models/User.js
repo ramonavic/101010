@@ -14,7 +14,7 @@ export default class User {
     async findUser(email) {
         const hashedEmail = encryption.hash(email)
 
-        const user = await this.db.single(
+        let user = await this.db.single(
             `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
                 FROM users 
             WHERE hashed_email = ? 
@@ -27,9 +27,7 @@ export default class User {
             return user
         }
 
-        user.email = encryption.decrypt(user.email)
-        user.name = encryption.decrypt(user.name)
-        user.spotifyId = encryption.decrypt(user.spotifyId)
+        user = encryption.decryptMultiple(user)
 
         console.log('db user', user)
 
@@ -42,7 +40,7 @@ export default class User {
      * @returns The user object
      */
     async findUserById(id) {
-        const user = this.db.single(
+        let user = this.db.single(
             `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
                 FROM users 
             WHERE id = ? 
@@ -51,8 +49,7 @@ export default class User {
             [id]
         )
 
-        user.email = encryption.decrypt(user.email)
-        user.name = encryption.decrypt(user.name)
+        user = encryption.decryptMultiple(user)
 
         return user
     }

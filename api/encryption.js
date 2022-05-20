@@ -63,6 +63,35 @@ export default {
         return decrypted.toString();
     },
 
+
+    /**
+     * Loop through Object to decrypt encrypted strings.
+     * 
+     * @param  {} textObject=Object that can hold different data types. Typically retrieved from DB.
+     * @returns {} Similar object as text object but with decrypted strings. 
+     */
+    decryptMultiple(textObject = {}) {
+        const decryptedTexts = {}
+
+        for (const key in textObject) {
+            if (!textObject.hasOwnProperty(key)) {
+                // Key must be inherited 
+                continue
+            }
+
+            if (!textObject[key] || !/^ehCRY=/.test(textObject[key])) {
+                decryptedTexts[key] = textObject[key]
+                continue
+            }
+
+            const decrypted = this.decrypt(textObject[key])
+            decryptedTexts[key] = decrypted
+        }
+
+        return decryptedTexts
+
+    },
+
     hash(text) {
         const hash = crypto.createHash('sha256', salt).update(text).digest('hex')
 
