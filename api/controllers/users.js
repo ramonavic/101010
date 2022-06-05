@@ -2,7 +2,6 @@ import Mailer from '../mailer'
 import UserModel from '../models/User'
 import SpotifyModel from '../models/Spotify'
 import jwt from 'jsonwebtoken'
-import encryption from '../encryption'
 
 const mailer = new Mailer()
 const User = new UserModel()

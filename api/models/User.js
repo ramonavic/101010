@@ -40,7 +40,7 @@ export default class User {
      * @returns The user object
      */
     async findUserById(id) {
-        let user = this.db.single(
+        let user = await this.db.single(
             `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
                 FROM users 
             WHERE id = ? 

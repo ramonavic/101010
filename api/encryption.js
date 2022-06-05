@@ -1,16 +1,10 @@
 import crypto from 'crypto'
 
 const algorithm = 'aes-256-cbc'
-
-// const iv = Buffer.from(crypto.randomBytes(16), "hex")
-
+const pepper = process.env.ENCRYPTION_PEPPER
 const secretKey = process.env.ENCRYPTION_SECRET
-const salt = process.env.ENCRYPTION_SALT
 
 export default {
-
-    // TODO: nice to prepend something like 'enCRY=' to the encrypted string. 
-    // Would make it easier to create a decryptMultiple function and to recognize encrypted fields in DB. 
 
     encrypt(text) {
 
@@ -32,7 +26,7 @@ export default {
 
         // Add IV to encrypted string and change to hex 
         // Example: enCRY=b259406bbaf052088fe9039a78faa411-1c450ce50bc79b919e7cef1c302e7675
-        const encryptedString = `ehCRY=${iv.toString('hex')}-${encrypted.toString('hex')}`
+        const encryptedString = `enCRY=${iv.toString('hex')}-${encrypted.toString('hex')}`
 
         return encryptedString
     },
@@ -41,13 +35,13 @@ export default {
 
         // Constructed as encRY=#{iv}-${encryptedData}
         // enCRY=b259406bbaf052088fe9039a78faa411-1c450ce50bc79b919e7cef1c302e7675
-        if (!text || !/^ehCRY=/.test(text)) {
+        if (!text || !/^enCRY=/.test(text)) {
             console.log('No text given. Returning from decryption.')
             return
         }
 
         // Take the iv hex from the string and transform it back to bytes
-        let iv = text.match(/ehCRY=(.*)-/)[1]
+        let iv = text.match(/enCRY=(.*)-/)[1]
         iv = Buffer.from(iv, 'hex')
 
         // Do the same with the encrypted string
@@ -79,7 +73,8 @@ export default {
                 continue
             }
 
-            if (!textObject[key] || !/^ehCRY=/.test(textObject[key])) {
+            // If the value of the key is not an encrypted string
+            if (!/^enCRY=/.test(textObject[key])) {
                 decryptedTexts[key] = textObject[key]
                 continue
             }
@@ -93,10 +88,10 @@ export default {
     },
 
     hash(text) {
-        const hash = crypto.createHash('sha256', salt).update(text).digest('hex')
 
-        console.log('hashed ', text, 'to ', hash)
-
+        // TODO add salt to hash in the DB so that each hash is unique. Don't feel like storing now atm.
+        // Should also hash multiple times. 
+        const hash = crypto.createHash('sha256', pepper).update(text).digest('hex')
         return hash
     }
 }
