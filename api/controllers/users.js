@@ -145,7 +145,12 @@ export const register = async (req, res) => {
 
             // TODO this is not the right way. Better is to send email first with all necessary 
             // info in the JWT. Then make a new account on the fly based on info. But for now not important enough. 
-            await User.registerUserThroughEmail(name, email, isSubscribed)
+            await User.registerUserThroughEmail(
+                name,
+                email,
+                isSubscribed
+            )
+
         } catch (err) {
             console.log(err)
             return res.status(404).json(err)

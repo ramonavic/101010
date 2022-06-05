@@ -15,12 +15,8 @@ import users from './routes/users'
 import playlists from './routes/playlists'
 import admin from './routes/admin'
 
-
-// Migrate to .env files
-const cookieSecret = 'RhQ-5NtjNAphRzoEyJ-BmqKXATLFOMo8'
-
 const app = express()
-app.use(cookieParser(cookieSecret, { httpOnly: true }))
+app.use(cookieParser(process.env.COOKIE_SECRET, { httpOnly: true }))
 app.use(express.json())
 app.use(cors())
 
@@ -29,8 +25,9 @@ app.use(
         store: new RedisStore({ client: Redis.connection, session }),
         secret: process.env.SESSION_SECRET,
         resave: false,
+        saveUninitialized: false,
         cookie: {
-            secure: false,  // if true only transmit cookie over https
+            secure: true,  // if true only transmit cookie over https
             httpOnly: true, // if true prevent client side JS from reading the cookie
             maxAge: 1000 * 60 * 60 * 24 * 7, // session max age in milliseconds (1 week)
         }

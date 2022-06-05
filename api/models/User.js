@@ -1,4 +1,5 @@
-import DB from '../db'
+import DB from '../db.mjs'
+import encryption from '../encryption'
 
 export default class User {
     constructor() {
@@ -11,14 +12,22 @@ export default class User {
      * @returns A user object
      */
     async findUser(email) {
-        const user = await this.db.single(
+        const hashedEmail = encryption.hash(email)
+
+        let user = await this.db.single(
             `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
                 FROM users 
-            WHERE email = ? 
+            WHERE hashed_email = ? 
                 AND deleted_at IS NULL 
             LIMIT 1`,
-            [email]
+            [hashedEmail]
         )
+
+        if (!user) {
+            return user
+        }
+
+        user = encryption.decryptMultiple(user)
 
         console.log('db user', user)
 
@@ -31,7 +40,7 @@ export default class User {
      * @returns The user object
      */
     async findUserById(id) {
-        return await this.db.single(
+        let user = await this.db.single(
             `SELECT id, name, email, spotify_id, image, mail_subscription, is_admin 
                 FROM users 
             WHERE id = ? 
@@ -39,20 +48,30 @@ export default class User {
             LIMIT 1`,
             [id]
         )
+
+        user = encryption.decryptMultiple(user)
+
+        return user
     }
 
     /**
      * It inserts a new user into the database.
      * @param name - The name of the user.
-     * @param email - The email of the user.
+     * @param email - The encrypted email of the user.
      * @param subscribeToMail - a boolean value that indicates whether the user wants to receive emails
      * or not.
+     * @param hashedEmail - the hashed version of the email
      * @returns The query result.
      */
     async registerUserThroughEmail(name, email, isSubscribed) {
+        const hashedEmail = encryption.hash(email)
+
+        name = encryption.encrypt(name)
+        email = encryption.encrypt(email)
+
         const result = await this.db.query(
-            `INSERT INTO users (name, email, mail_subscription) VALUES (?, ?, ?)`,
-            [name, email, isSubscribed]
+            `INSERT INTO users (name, email, mail_subscription, hashed_email) VALUES (?, ?, ?, ?)`,
+            [name, email, isSubscribed, hashedEmail]
         )
 
         if (!result.insertId) {
@@ -67,9 +86,11 @@ export default class User {
      * @param [token=null] - The token that will be used to generate access token
      */
     async updateRefreshToken(id = null, token = null) {
+        token = encryption.encrypt(token)
+
         console.log('updating refresh token in mysql', id, token)
         if (!id) {
-            throw `Cant update refreshtoken in DB`
+            throw `Cant update refresh token in DB`
         }
 
         const update = await this.db.query(
@@ -95,7 +116,7 @@ export default class User {
         }
 
         const result = await this.db.single(`SELECT refresh_token FROM users WHERE id = ? LIMIT 1`, [id])
-        return result.refresh_token
+        return encryption.decrypt(result.refresh_token)
     }
 
     /**
@@ -106,6 +127,8 @@ export default class User {
      * @returns A boolean value.
      */
     async updateWithSpotifyInfo(userId, spotifyId, image) {
+        spotifyId = encryption.encrypt(spotifyId)
+        image ? encryption.encrypt(image) : null
 
         const update = this.db.query(
             `UPDATE users 

@@ -52,7 +52,6 @@ export const setupLoginStrategies = () => {
 
     passport.use('checkAuth', new CustomStrategy(
         async function (req, callback) {
-            console.log('inside check auth')
 
             console.log('is authenticated?', req.isAuthenticated(), req.user)
             if (req.isAuthenticated()) {
@@ -62,10 +61,8 @@ export const setupLoginStrategies = () => {
             // Check for remember me cookie
             const userCookie = req.signedCookies.user
 
-            console.log('trying to auth with usercookie', userCookie)
             if (userCookie && userCookie.id) {
                 const user = await User.findUserById(userCookie.id)
-
                 return callback(null, user)
             } else {
                 throw `Authenticating with user cookie failed`

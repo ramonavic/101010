@@ -49,7 +49,7 @@ export default class Spotify {
                 }
             })
             const data = response.data
-
+            console.log('data from access token', data)
             // Check for request forgery
             if (data && data.state === this.state) {
                 data.refresh_token && User.updateRefreshToken(userId, data.refresh_token)

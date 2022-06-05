@@ -7,7 +7,6 @@
 
 import fs from 'fs/promises'
 import { dirname } from 'path'
-import { nextTick } from 'process'
 import { fileURLToPath } from 'url'
 import * as migrate from './migrate.mjs'
 

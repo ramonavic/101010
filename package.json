@@ -29,7 +29,7 @@
     "mysql2": "^2.3.3",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
-    "nuxt": "^2.15.8",
+    "nuxt": "^2.13.3",
     "nuxt-buefy": "^0.4.18",
     "passport": "^0.5.2",
     "passport-custom": "^1.1.1",
@@ -37,7 +37,7 @@
     "vue": "^2.6.14",
     "vue-server-renderer": "^2.6.14",
     "vue-template-compiler": "^2.6.14",
-    "webpack": "^4.46.0"
+    "webpack": "^5.73.0"
   },
   "devDependencies": {
     "dotenv": "^8.6.0",
