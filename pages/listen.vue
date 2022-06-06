@@ -4,18 +4,14 @@
             <b-button @click="isBrowsing = !isBrowsing"> {{isBrowsing ? 'Vinyl Player' : 'Browser'}}</b-button>
             <Sidebar :playlists="playlists" @preview="preview" /> 
         </div>
-        <div class="browser" v-if="isBrowsing">
-            <Preview @showVinylPlayer="isBrowsing = false"/>
+        <div class="browser" v-show="isBrowsing">
+            <Preview 
+                @showVinylPlayer="showVinylPlayer"
+            />
         </div>
 
-        <div v-else class="vinyl">
-            <Container
-                @drop="onDrop"
-                :group-name="dropName"
-                behaviour="drop-zone"
-            >
-                <VinylPlayer />
-            </Container>
+        <div v-show="!isBrowsing">
+            <VinylPlayer />
         </div>
     </div>
 </template>
@@ -65,6 +61,13 @@ export default {
             const playlist = this.playlists.find((playlist) => playlist.id === id)
 
             this.$store.commit('playlists/SET_PREVIEW', playlist)
+        },
+
+        showVinylPlayer() {
+            console.log('inside show vinyl player')
+            setTimeout(() => {
+                this.isBrowsing = false
+            }, 1100)
         },
     },
 }

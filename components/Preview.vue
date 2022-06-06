@@ -1,14 +1,18 @@
 <template>
     <section>
-            <div class="card">  
+            <div 
+                class="card" 
+            >  
                 <Container 
                     :group-name="dropName"
+                    @drag-start="onDrag"
+                    @drag-end="onDragEnd"
                 >            
                 <Draggable>
                     <Vinyl :isAnimating="isAnimating" :backgroundImage="backgroundImage" :isPreview="true"/>
                 </Draggable>
                 </Container>
-                <div class="card-image" :style="backgroundImage">
+                <div class="card-image" :style="backgroundImage"  :class="{'hide-album-cover': hideAlbumCover}">
                     <div class="top">
                         <div class="name"> {{playlist.name}} </div>
                     </div>
@@ -57,6 +61,15 @@ section {
         }
     }
 
+    @keyframes hide {
+        from {
+            transform: translate(0);
+        }
+        to {
+            transform: translateX(-100vw);
+        }
+    }
+
     .card-image {
         height: 100%;
         width: 100%;
@@ -67,6 +80,14 @@ section {
         background-color: $background;
         top: 0;
         z-index: $z-card-image;
+
+        &.hide-album-cover {
+            animation-name: hide;
+            animation-duration: 800ms;
+            animation-iteration-count: 1;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+        }
     }
 
     .play-btn {
@@ -118,13 +139,17 @@ import { mapGetters } from 'vuex'
 import { Container, Draggable } from 'vue-smooth-dnd'
 
 export default {
-    components: { Container, Draggable },
+    components: {
+        Container,
+        Draggable,
+    },
     data() {
         return {
             spotifyUser: 'ramonavic',
             isPlaying: false,
-            isAnimating: false,
-            dropName: 'vinyl',
+            isAnimating: false, // Animates vinyl when someone hovers of a playlist in the sidebar
+            dropName: 'vinyl', // This creates a drag and drop group
+            hideAlbumCover: false, // Animation that hides album cover
         }
     },
     computed: {
@@ -173,18 +198,14 @@ export default {
             return `spotify:user:${this.spotifyUser}:playlist:${this.playlist.spotify_id}`
         },
 
-        onDrop(el) {
-            console.log('dropped', el)
-        },
-
-        showVinylPlayer() {
+        onDrag() {
+            this.hideAlbumCover = true
             console.log('showing vinyl player')
             this.$emit('showVinylPlayer')
         },
 
-        shouldAcceptDrop() {
-            console.log('inside should accept drop')
-            return true
+        onDragEnd() {
+            console.log('drag end')
         },
     },
 }

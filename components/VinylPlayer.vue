@@ -1,14 +1,20 @@
 <template>
     <section>
-        <div v-if="playlist" class="card">
-            <Vinyl :class="{'is-spinning': isPlaying}" :backgroundImage="backgroundImage"/>
-            <!-- <div class="top">
-                <div class="title over-image"> {{playlist.name}} </div>
-            </div>         -->
-            <div class="needle" :class="{'is-playing': isPlaying}">
+         <Container
+            @drop="onClickPlay"
+            :group-name="dropName"
+            behaviour="drop-zone"
+        >
+            <div v-if="playlist" class="card">
+                <Vinyl :class="{'is-spinning': isPlaying}" :backgroundImage="backgroundImage"/>
+                <!-- <div class="top">
+                    <div class="title over-image"> {{playlist.name}} </div>
+                </div>         -->
+                <div class="needle" :class="{'is-playing': isPlaying}">
 
+                </div>
             </div>
-        </div>
+         </Container>
         <div class="card-footer">
 
             <!-- TODO hier moet een Spotify icoon komen -->
@@ -88,12 +94,17 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { Container } from 'vue-smooth-dnd'
 
 export default {
+    components: {
+        Container,
+    },
     data() {
         return {
             spotifyUser: 'ramonavic',
             isPlaying: false,
+            dropName: 'vinyl', // This creates a drag and drop group
         }
     },
     computed: {
@@ -130,6 +141,10 @@ export default {
         },
         getPlaylistUri() {
             return `spotify:user:${this.spotifyUser}:playlist:${this.playlist.spotify_id}`
+        },
+
+        onDrop() {
+            console.log('dropped vinyl in player')
         },
     },
 }

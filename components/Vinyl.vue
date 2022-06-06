@@ -1,6 +1,6 @@
 <template>
     <div 
-        v-bind:class="{'is-animating': isAnimating, 'is-preview': isPreview}"
+        :class="{'is-animating': isAnimating, 'is-preview': isPreview}"
         class="vinyl"   
     >   
         <div class="vinyl__outer-outer-circle">
@@ -26,7 +26,7 @@ export default {
 <style lang="scss" scoped>
 .vinyl {
     position: absolute;
-
+    left: 0.5rem;
     top: 0.5rem;
     z-index: $z-vinyl;
     border-radius: 50%;

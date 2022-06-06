@@ -9,7 +9,8 @@ export const state = () => ({
     currentPlaylist: null, // hold the playlist URI and name
     deviceId: null,
     currentTrack: null,
-    spotifyUser: 'ramonavic' // doesn't change for now
+    spotifyUser: 'ramonavic', // doesn't change for now
+    isPlaying: false // TODO Integrate this with all isPlaying attributes in the views
 })
 
 export const mutations = {
