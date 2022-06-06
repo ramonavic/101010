@@ -17,7 +17,10 @@ export default class Spotify {
             redirect_uri: this.redirect_uri,
             scope: this.scope,
             response_type: 'code',
-            show_dialog: true
+            show_dialog: true,
+
+            // TODO need to make sure we check if the state is correct when we return
+            state: this.generateRandomString(16) // Create a state to help check for request forgery
         })
     }
 
@@ -26,16 +29,12 @@ export default class Spotify {
             throw `Invalid params supplied to get access token`
         }
 
-        // Create a state to help check for request forgery
-        this.state = this.generateRandomString(16)
-
         const params = {
             grant_type: 'authorization_code',
             client_id: this.client_id,
             client_secret: this.client_secret,
             code,
-            redirect_uri: this.redirect_uri,
-            state: this.state
+            redirect_uri: this.redirect_uri
         }
 
         try {
@@ -51,16 +50,15 @@ export default class Spotify {
             const data = response.data
             console.log('data from access token', data)
             // Check for request forgery
-            if (data && data.state === this.state) {
-                data.refresh_token && User.updateRefreshToken(userId, data.refresh_token)
+            if (data) {
+                data.refresh_token && await User.updateRefreshToken(userId, data.refresh_token)
 
                 return {
                     ...data,
                     status: 'succesfully refresh token'
                 }
             } else {
-                console.log(data.state, this.state)
-                console.error('dont continue state is not the same')
+                console.error('No refresh token received')
             }
 
         } catch (err) {
@@ -79,7 +77,6 @@ export default class Spotify {
             grant_type: 'refresh_token',
             client_id: this.client_id,
             client_secret: this.client_secret,
-            // state: this.state,
             refresh_token
         }
 

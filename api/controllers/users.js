@@ -27,13 +27,12 @@ export const authCallback = async (req, res) => {
 
 
     if (user.spotify_id && user.refresh_token) {
-        console.log('user has refresh token', user.refresh_token)
 
         const accessToken = await Spotify.getAccessTokenFromRefreshToken(user.refresh_token, user.id)
 
         if (accessToken === false) {
             user.needsNewRefreshToken = true
-            await User.updateRefreshtoken(user.id, null)
+            await User.updateRefreshToken(user.id, null)
         }
 
         setAccessTokenCookie(res, accessToken)
