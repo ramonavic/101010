@@ -1,35 +1,37 @@
 <template>
     <section>
-        <div class="card">
-            <div 
-                id="vinyl" 
-                v-bind:class="{'is-animating': isAnimating}"   
-            ></div>
-            <div class="card-image" :style="backgroundImage">
-                <div class="top">
-                    <div class="name"> {{playlist.name}} </div>
-                </div>
-                <div class="play-btn" @click="onClickPlay()">
-                    <b-icon
-                        custom-size="mdi"
-                        icon="play"
-                    ></b-icon>               
-                </div>
-                <div class="tags-container">
-
-                    <b-taglist>
-                        <template v-for="tag in playlist.tags">
-                            <b-tag v-if="tag.is_theme" :key="tag.id" type="is-primary">
-                                {{tag.name}}
-                            </b-tag>
-                            <b-tag  v-else :key="tag.id" type="is-grey">
-                                {{tag.name}}
-                            </b-tag>
-                        </template>
-                    </b-taglist>
+            <div class="card">  
+                <Container 
+                    :group-name="dropName"
+                >            
+                <Draggable>
+                    <Vinyl :isAnimating="isAnimating" :backgroundImage="backgroundImage" :isPreview="true"/>
+                </Draggable>
+                </Container>
+                <div class="card-image" :style="backgroundImage">
+                    <div class="top">
+                        <div class="name"> {{playlist.name}} </div>
+                    </div>
+                    <div class="play-btn" @click="onClickPlay()">
+                        <b-icon
+                            custom-size="mdi"
+                            icon="play"
+                        ></b-icon>               
+                    </div>
+                    <div class="tags-container">
+                        <b-taglist>
+                            <template v-for="tag in playlist.tags">
+                                <b-tag v-if="tag.is_theme" :key="tag.id" type="is-primary">
+                                    {{tag.name}}
+                                </b-tag>
+                                <b-tag  v-else :key="tag.id" type="is-grey">
+                                    {{tag.name}}
+                                </b-tag>
+                            </template>
+                        </b-taglist>
+                    </div>
                 </div>
             </div>
-        </div>
         <Tracklist :tracks="playlist.tracks" />
     </section>
 </template>
@@ -82,44 +84,6 @@ section {
         }
     }
 
-    #vinyl {
-        position: absolute;
-        left: 30%;
-        top: 0.5rem;
-        z-index: $z-vinyl;
-        border-radius: 50%;
-        width: 29rem;
-        height: 29rem;
-        border: 1px solid #fff;
-        background-color: $background;
-        transition: all 150ms ease;
-
-        &.is-animating {
-            animation-name: show;
-            animation-duration: 800ms;
-            animation-iteration-count: 1;
-            animation-timing-function: linear;
-        }
-
-        @keyframes show {
-            from {
-                left: 30%;
-                display: block;
-            }
-            40% {
-                display: none;
-                left: 0;
-            }
-            75% {
-                display: block;
-                left: 0;
-            }
-            to {
-                left: 30%;
-            }
-        }
-    }
-
     .top {
         position: relative;
         margin: 1rem;
@@ -151,13 +115,16 @@ section {
 
 <script>
 import { mapGetters } from 'vuex'
+import { Container, Draggable } from 'vue-smooth-dnd'
 
 export default {
+    components: { Container, Draggable },
     data() {
         return {
             spotifyUser: 'ramonavic',
             isPlaying: false,
             isAnimating: false,
+            dropName: 'vinyl',
         }
     },
     computed: {
@@ -205,9 +172,20 @@ export default {
         getPlaylistUri() {
             return `spotify:user:${this.spotifyUser}:playlist:${this.playlist.spotify_id}`
         },
-    },
-    mounted() {
-        console.log(VueDND)
+
+        onDrop(el) {
+            console.log('dropped', el)
+        },
+
+        showVinylPlayer() {
+            console.log('showing vinyl player')
+            this.$emit('showVinylPlayer')
+        },
+
+        shouldAcceptDrop() {
+            console.log('inside should accept drop')
+            return true
+        },
     },
 }
 </script>

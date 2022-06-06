@@ -179,13 +179,13 @@ export const actions = {
 
         }
 
-        if (playbackState.context.uri !== getters['getCurrentPlaylist']) {
+        if (playbackState.context.uri !== getters['getCurrentPlaylist'].uri) {
 
             commit(
                 'SET_CURRENT_PLAYLIST',
                 {
                     uri: playbackState.context.uri,
-                    name: playbackState.context.metadata.context_description
+                    name: playbackState.context.metadata.name
                 }
             )
         }

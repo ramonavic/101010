@@ -5,11 +5,17 @@
             <Sidebar :playlists="playlists" @preview="preview" /> 
         </div>
         <div class="browser" v-if="isBrowsing">
-            <Preview />
+            <Preview @showVinylPlayer="isBrowsing = false"/>
         </div>
 
         <div v-else class="vinyl">
-            <VinylPlayer />
+            <Container
+                @drop="onDrop"
+                :group-name="dropName"
+                behaviour="drop-zone"
+            >
+                <VinylPlayer />
+            </Container>
         </div>
     </div>
 </template>
