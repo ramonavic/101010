@@ -1,6 +1,6 @@
 <template>
     <div 
-        :class="{'is-animating': isAnimating, 'is-preview': isPreview}"
+        :class="{'is-animating': isAnimating, 'is-preview': isPreview, 'is-spinning': isPlaying}"
         class="vinyl"   
     >   
         <div class="vinyl__outer-outer-circle">
@@ -19,6 +19,7 @@ export default {
         backgroundImage: Object,
         isAnimating: Boolean,
         isPreview: Boolean,
+        isPlaying: Boolean,
     },
 }
 </script>
@@ -26,8 +27,6 @@ export default {
 <style lang="scss" scoped>
 .vinyl {
     position: absolute;
-    left: 0.5rem;
-    top: 0.5rem;
     z-index: $z-vinyl;
     border-radius: 50%;
     width: 29rem;
@@ -35,9 +34,22 @@ export default {
     border: 0.25px solid $grey-dark;
     background-color: $background;
     transition: all 150ms ease;
+    cursor: pointer;
 
-    &.is-preview {
-        left: 30%;
+    &.is-spinning {
+        animation-name: spin;
+        animation-duration: 5000ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 
     &.is-animating {
