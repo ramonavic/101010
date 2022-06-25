@@ -1,9 +1,12 @@
 <template>
-  <div class="card" id="tracklist">
+  <div class="card">
             <div class="top"> 
                 <span class="header"> TRACKLIST </span>
+
+                <!-- TODO: highlight track that is played. For this we to create logic in the admin to add the spotify_id. 
+                Then we should readd all the tracks again. -->
                 <template v-for="track in tracks" >
-                    <span class="track" :key="track.id" @click="onClickPlay(track.sequence)"> 
+                    <span class="track" :key="track.id" @click="$emit('onClickPlay', track.sequence)"> 
                         {{track.sequence}}. {{track.artists}} - {{track.title}}  
                     </span>
                 </template>
@@ -12,9 +15,16 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
     props: {
         tracks: Array,
+    },
+
+    computed: {
+        ...mapGetters({
+            currentTrack: 'player/getCurrentTrack',
+        }),
     },
 
     methods: {

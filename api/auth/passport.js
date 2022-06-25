@@ -79,6 +79,7 @@ export const setupLoginStrategies = () => {
 
     passport.deserializeUser(function (user, done) {
         console.log(`desiarlized user ${user.id}`)
+        console.log(user)
         done(null, user);
     });
 

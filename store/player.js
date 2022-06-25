@@ -9,7 +9,8 @@ export const state = () => ({
     currentPlaylist: null, // hold the playlist URI and name
     deviceId: null,
     currentTrack: null,
-    spotifyUser: 'ramonavic' // doesn't change for now
+    spotifyUser: 'ramonavic', // doesn't change for now
+    isPlaying: false // TODO Integrate this with all isPlaying attributes in the views
 })
 
 export const mutations = {
@@ -167,7 +168,6 @@ export const actions = {
         // from the current track data
         if (currentTrackData?.id !== getters['getCurrentTrack']?.id) {
             const { id, name, artists, uri } = currentTrackData
-
             const currentTrack = {
                 id,
                 name,
@@ -179,13 +179,13 @@ export const actions = {
 
         }
 
-        if (playbackState.context.uri !== getters['getCurrentPlaylist']) {
+        if (playbackState.context.uri !== getters['getCurrentPlaylist'].uri) {
 
             commit(
                 'SET_CURRENT_PLAYLIST',
                 {
                     uri: playbackState.context.uri,
-                    name: playbackState.context.metadata.context_description
+                    name: playbackState.context.metadata.name
                 }
             )
         }

@@ -1,5 +1,4 @@
 export const adminCheck = async (req, res, next) => {
-
     if (req.isAuthenticated() && req.user.is_admin) {
         console.log('user is admin and can continue')
         next()
