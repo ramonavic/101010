@@ -15,11 +15,10 @@
                     
                     <Draggable 
                         class="draggable-container vinyl-container" 
-                        :class="{'is-preview': isBrowsing}"
+                        :class="{'is-preview': isBrowsing, 'is-showing-preview': isShowingPreview}"
                     >
                         <Vinyl 
                             class="vinyl"
-                            :isAnimating="isAnimating" 
                             :backgroundImage="backgroundImage" 
                             :isBrowsing="isBrowsing"
                             :isPlaying="isPlaying"
@@ -38,23 +37,6 @@
                         @onClickPlay="onClickPlay"
                     />
                 </Container>
-                <!-- <Container 
-                   
-                >   
-                  
-                </Container> -->
-                <!-- <Container
-                    @drop="onClickPlay"
-                    :group-name="dropName"
-                    behaviour="drop-zone"
-                    class="drop-container"
-                    v-if="!isBrowsing" 
-                >
-                    <!-- <VinylPlayer 
-                        :isPlaying="isPlaying"
-                        @onClickPlay="onClickPlay"
-                    /> -->
-                <!-- </Container> -->
             </div>
             <Tracklist 
                 :tracks="playlist.tracks" 
@@ -91,6 +73,13 @@
     display: inline-block;
 
     .vinyl-container {
+        &.is-showing-preview {
+            animation-name: show-preview;
+            animation-duration: 800ms;
+            animation-iteration-count: 1;
+            animation-timing-function: linear;
+        }
+
         &.is-preview &:hover {
             .vinyl-container {
                 left: 4rem;
@@ -114,6 +103,24 @@
         animation-iteration-count: 1;
         animation-timing-function: linear;
         animation-fill-mode: forwards;
+    }
+
+    @keyframes show-preview {
+        from {
+            left: 30%;
+            display: block;
+        }
+        40% {
+            display: none;
+            left: 0;
+        }
+        75% {
+            display: block;
+            left: 0;
+        }
+        to {
+            left: 30%;
+        }
     }
 
     .drop-container {
@@ -158,7 +165,7 @@ export default {
             isBrowsing: true,
             isPlaying: false,
             dropName: 'vinyl', // This creates a drag and drop group
-            isAnimating: false, // Animates vinyl when someone hovers of a playlist in the sidebar
+            isShowingPreview: false, // Animates vinyl when someone hovers of a playlist in the sidebar
             isAnimatingAway: false,
         }
     },
@@ -170,7 +177,6 @@ export default {
             playlist: 'playlists/getPreview',
         }),
         backgroundImage() {
-            console.log(this.playlist)
             return {
                 'background-image': `url(${this.playlist.image})`,
             }
@@ -195,7 +201,6 @@ export default {
 
             setTimeout(() => {
                 this.isAnimatingAway = false
-                this.isPlaying = true
             }, 1000)
         },
 
@@ -210,9 +215,9 @@ export default {
             const player = rootPage?.$refs?.player
 
             if (player) {
-                player.preparePlay(this.getPlaylistUri(), sequence)
-
                 this.isPlaying = true
+
+                player.preparePlay(this.getPlaylistUri(), sequence)
             } else {
                 // TODO throw through confirm
             }
@@ -231,6 +236,18 @@ export default {
         onDragEnd() {
             console.log('drag end')
             this.onClickPlay()
+        },
+    },
+
+    watch: {
+        playlist() {
+            if (!this.isShowingPreview) {
+                this.isShowingPreview = true
+            }
+
+            setTimeout(() => {
+                this.isShowingPreview = false
+            }, 800)
         },
     },
 }

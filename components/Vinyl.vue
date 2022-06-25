@@ -52,31 +52,6 @@ export default {
         }
     }
 
-    &.is-animating {
-        animation-name: show;
-        animation-duration: 800ms;
-        animation-iteration-count: 1;
-        animation-timing-function: linear;
-    }
-
-    @keyframes show {
-        from {
-            left: 30%;
-            display: block;
-        }
-        40% {
-            display: none;
-            left: 0;
-        }
-        75% {
-            display: block;
-            left: 0;
-        }
-        to {
-            left: 30%;
-        }
-    }
-
     &__outer-outer-circle {
         border-radius: 50%;
         background: $background;
