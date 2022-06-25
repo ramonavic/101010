@@ -168,7 +168,6 @@ export const actions = {
         // from the current track data
         if (currentTrackData?.id !== getters['getCurrentTrack']?.id) {
             const { id, name, artists, uri } = currentTrackData
-            console.log(currentTrackData)
             const currentTrack = {
                 id,
                 name,
