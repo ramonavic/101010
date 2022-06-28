@@ -11,7 +11,7 @@ export default class Playlist {
      */
     async getAll() {
         return await this.db.query(
-            `SELECT * FROM playlists WHERE deleted_at IS NULL`
+            `SELECT * FROM playlists WHERE deleted_at IS NULL ORDER BY created_at DESC`
         )
     }
 

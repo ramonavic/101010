@@ -8,9 +8,10 @@ export default {
 
     encrypt(text) {
 
-        if (!text) {
+        // Only encrypt strings, therefore check if substring method exists
+        if (!text || !text.substring) {
 
-            console.log('No text given. Returning from encryption.')
+            console.log('No string given. Returning from encryption.')
             return
         }
 
