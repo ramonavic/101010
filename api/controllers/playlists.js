@@ -22,18 +22,8 @@ export const index = async (req, res) => {
 
     const tracks = await Playlist.getAllTracks()
 
-    // Attach tag array to playlist objects
-    playlists.forEach((playlist, index) => {
-
-        playlists[index].tracks = tracks.filter((track) => track.playlist_id === playlist.id)
-
-        // Add tags to playlists and sort is_theme tags first (boolean sort)
-        playlists[index].tags = tags.filter((tag) => {
-            if (tag.playlist_id === playlist.id) {
-                return tag
-            }
-        }).sort((a, b) => a.is_theme - b.is_theme).reverse()
-    })
+    // Attach tag and tracks array to playlist objects
+    playlists = attachTagsAndTracks(playlists, tracks, tags)
 
     if (!playlists.length) {
         return res.status(400).json({ status: 'error', type: 'No playlists found' })
@@ -46,4 +36,20 @@ export const index = async (req, res) => {
 
     res.json(data)
 
+}
+
+export const attachTagsAndTracks = (playlists, tracks, tags) => {
+    playlists.forEach((playlist, index) => {
+
+        playlists[index].tracks = tracks.filter((track) => track.playlist_id === playlist.id)
+
+        // Add tags to playlists and sort is_theme tags first (boolean sort)
+        playlists[index].tags = tags.filter((tag) => {
+            if (tag.playlist_id === playlist.id) {
+                return tag
+            }
+        }).sort((a, b) => a.is_theme - b.is_theme).reverse()
+    })
+
+    return playlists
 }
