@@ -1,8 +1,8 @@
 <template>
   <div class="hello">
-    <section class="hero">
-      <div class="hero-body">
-        <h1 class="title"> 101010 </h1>
+    <section>
+      <div>
+        <h1 class="title"> Digging in the Waves </h1>
         <h3 class="subtitle"> Music from the 🌍 curated with ❤️ </h3>
       </div>
     </section>
@@ -23,21 +23,21 @@
 </template>
 
 <script>
-    import Vue from 'vue'
-    import { mapGetters } from 'vuex'
-    import { mapMutations } from 'vuex'
+import Vue from 'vue'
+import { mapGetters } from 'vuex'
+import { mapMutations } from 'vuex'
 
-    export default {
-        name: 'Home',
-        computed: {
-            ...mapGetters({
-                user: 'user/getUser'
-            }),
-            getSpotifyProfile() {
-              return `https://open.spotify.com/user/${this.user.spotify_id}`
-            }
-        }
-    }
+export default {
+    name: 'Home',
+    computed: {
+        ...mapGetters({
+            user: 'user/getUser',
+        }),
+        getSpotifyProfile() {
+            return `https://open.spotify.com/user/${this.user.spotify_id}`
+        },
+    },
+}
 </script>
 
 <style>

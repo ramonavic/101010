@@ -5,7 +5,6 @@
                     <div class="title over-image"> {{playlist.name}} </div>
                 </div>         -->
         <div class="needle" :class="{'is-playing': isPlaying}"></div>
-        <div class="middle"></div>
         <!-- <div class="card-footer"> -->
 
             <!-- TODO hier moet een Spotify icoon komen -->
@@ -54,17 +53,6 @@
             bottom: -1rem;
         }
     }
-}
-
-.middle {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    background: $grey;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    z-index: 1000;
 }
 </style>
 

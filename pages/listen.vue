@@ -49,6 +49,7 @@
 <style lang="scss">
 .page-container {
     background-color: $background;
+    padding-left: 2rem;
 
     @media screen and (max-width: 780px) {
         justify-content: center;
@@ -67,10 +68,11 @@
     margin: 0 2rem 2rem 0;
     width: 30rem;
     height: 30rem;
-    background-color: #0a0a0a;
+    background-color: #040d16;
     border: 1px solid $grey-dark;
-    box-shadow: 18px 18px 22px 5px $black;
+    box-shadow: 1px 3px 3px 3px $black;
     display: inline-block;
+    border-radius: 2px;
 
     .vinyl-container {
         &.is-showing-preview {

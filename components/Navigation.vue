@@ -60,10 +60,10 @@
                             </a>
                     </div>
                     <div v-else>
-                        <a v-on:click=logOut() class="button is-light"> 
+                        <a v-on:click=logOut() class="button"> 
                             Logout
                         </a>
-                        <a href="/settings" class="button is-light">
+                        <a href="/settings" class="button">
                             Settings
                         </a>
                     </div>
@@ -76,9 +76,10 @@
 <style lang="scss">
 .nav {
     box-shadow: unset;
-    border-bottom: 1px solid $grey-dark;
     border-radius: 0px;
     z-index: $z-nav !important;
+    padding-left: 1.5rem;
+    padding-right: 0.5rem;
 }
 
 .b-sidebar {
