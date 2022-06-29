@@ -40,9 +40,10 @@ export default {
     width: 30rem !important;
     height: 30rem;
     border: 1px solid $grey-dark;
-    box-shadow: 18px 18px 22px 5px $black;
+    box-shadow: 1px 3px 3px 3px $black;
     background-color: $background;
     cursor: pointer;
+    border-radius: 2px;
 }
 
 .top {
